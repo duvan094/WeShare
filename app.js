@@ -11,6 +11,17 @@ const app = express();
 const saltRounds = 10;//How many times the password is hashed
 const serverSecret = "jacobjhaskjhdjakhdkahdjakasdoliver"; //
 
+app.use(function corsMiddleware(request, response, next){
+ response.header("Access-Control-Allow-Origin", "http://localhost:3000");
+ response.header("Access-Control-Allow-Methods", "*");
+ response.header("Access-Control-Allow-Headers", "*");
+ response.header("Access-Control-Expose-Headers", "*");
+ next();
+});
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+
 // Tell the database to use foreign keys.
 db.run("PRAGMA foreign_keys = ON");
 
