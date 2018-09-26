@@ -5,14 +5,14 @@
 app.post("/group-members", function(req, res) {
 	const body = req.body;
 	const groupId = body.groupId;
-	const userId = body.userId; 
+	const userId = body.userId;
 
 	const values = [groupId, userId]
 	const query = "INSERT INTO groupMember(groupId,userId) VALUES (?,?,?)"
 	//query2 is for checking if user is in group already!
 	const values2 = [userId, groupId]
 	const query2 = "SELECT * FROM GroupMember WHERE userId = ? AND groupId = ?"
-	
+
 	db.get(query2,values2, function(error, groupMember){
 		if(error){
 			res.status(500).end()
@@ -50,24 +50,22 @@ app.delete("/group-members/:id", function(req, res) {
 	const id = parseInt(req.params.id);
 	const query = "DELETE * FROM groupMember WHERE id = ?";
 	const values = [id];
- 	
+
  	db.get('SELECT * FROM Account Where id = ?', [accountId], function(error, account) {
 		if (error) {
 			res.status(500).end()
 		} else if (!account) {
 			res.status(400).json({
 				error: "acccountNotFound"
-			}) 
+			});
 		} else {
 			db.run(query, values, function(error){
-		if(error) {
-			res.status(500).send("Internal error")
-		} else {
-			res.status(201).end();
+		      if(error) {
+      			res.status(500).send("Internal error")
+      		} else {
+      			res.status(201).end();
+      		}
+	       });
 		}
-	}) 
-		}
-	}
+  }
 });
-
-
