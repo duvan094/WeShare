@@ -16,10 +16,10 @@ app.post("/group-members", function(req, res) {
 			res.status(500).end();
 			return;
 		} else if(groupMember) {
-			res.status(409).send("Conflict");
+				res.status(409).send("Conflict");
 			return;
 		} else {
-			db.run(query, values, function(error){
+				db.run(query, values, function(error){
 				if(error){
 					res.status(500).end();
 				}else{
@@ -30,19 +30,16 @@ app.post("/group-members", function(req, res) {
 	}
 });
 
-
-
-
 //View all group members
-app.get("/group-members/:id", function(req, res) {
+app.get("/group-members/:id", function(req, res){
 	const id = parseInt(req.params.id);
 	const query = "SELECT * FROM groupMember WHERE id= ?";
 	const values = [id];
 
-	db.get(query, values, function(error, post) {
-		if (error) {
+	db.get(query, values, function(error, post){
+		if (error){
 			res.status(500).send("Internal Error");
-		} else {
+		}else{
 			res.status(200).send(post);
 		}
 	});
@@ -55,20 +52,20 @@ app.delete("/group-members/:id", function(req, res) {
 	const values = [id];
 
  	db.get('SELECT * FROM Account Where id = ?', [accountId], function(error, account) {
-		if (error) {
+		if(error){
 			res.status(500).end();
-		} else if (!account) {
+		}else if(!account){
 			res.status(400).json({
 				error: "acccountNotFound"
 			});
-		} else {
+		}else{
 			db.run(query, values, function(error){
-		      if(error) {
-      			res.status(500).send("Internal error")
-      		} else {
-      			res.status(201).end();
-      		}
-	       });
+		    if(error){
+      	  res.status(500).send("Internal error");
+      	}else{
+    		  res.status(201).end();
+    		}
+	    });
 		}
-  }
+  });
 });
