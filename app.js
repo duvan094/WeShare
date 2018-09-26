@@ -1,4 +1,4 @@
-require('./init');
-require('./account');
-require('./group');
-require('./group_member');
+require('./src/init');
+require('./src/account');
+require('./src/group');
+require('./src/group_member');
