@@ -7,33 +7,36 @@ app.post("/group-members", function(req, res) {
 	const groupId = body.groupId;
 	const userId = body.userId; 
 
-	const values = [groupId, userId]
-	const query = "INSERT INTO groupMember(groupId,userId) VALUES (?,?,?)"
-	//query2 is for checking if user is in group already!
-	const values2 = [userId, groupId]
-	const query2 = "SELECT * FROM GroupMember WHERE userId = ? AND groupId = ?"
+	const values = [userId, groupId]
+	const query = "INSERT INTO groupMember(userId,groupId) VALUES (?,?)"
 	
-	db.get(query2,values2, function(error, groupMember){
+	//check if user is in the group already. if not add the group memeber.
+	db.get("SELECT * FROM GroupMember WHERE userId = ? AND groupId = ?", values, function(error, groupMember){
 		if(error){
-			res.status(500).end()
+			res.status(500).end();
+			return;
 		} else if(groupMember) {
-			res.status(409).send("An attempt was made to create an object that already exists")
-		}
-	} )
-
-	db.run(query, values, function(error){
-		if(error){
-
+			res.status(409).send("Conflict");
+			return; 
 		} else {
-
+			db.run(query, values, function(error){
+				if(error){
+					res.status(500).end();
+				}else{
+					res.status(201).end();
+				}
+			});
 		}
-	})
+	}
 });
+
+
+
 
 //View all group members
 app.get("/group-members/:id", function(req, res) {
 	const id = parseInt(req.params.id);
-	const query = "SELECT * FROM groupMember WHERE id= ?"
+	const query = "SELECT * FROM groupMember WHERE id= ?";
 	const values = [id];
 
 	db.get(query, values, function(error, post) {
@@ -53,19 +56,19 @@ app.delete("/group-members/:id", function(req, res) {
  	
  	db.get('SELECT * FROM Account Where id = ?', [accountId], function(error, account) {
 		if (error) {
-			res.status(500).end()
+			res.status(500).end();
 		} else if (!account) {
 			res.status(400).json({
 				error: "acccountNotFound"
-			}) 
+			});
 		} else {
 			db.run(query, values, function(error){
-		if(error) {
-			res.status(500).send("Internal error")
-		} else {
-			res.status(201).end();
-		}
-	}) 
+				if(error) {
+					res.status(500).send("Internal error");
+				} else {
+					res.status(201).end();
+				}
+			});
 		}
 	}
 });
