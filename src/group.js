@@ -134,7 +134,7 @@ app.delete("/groups/:id", function(req, res){
   const query = "DELETE * FROM Groups WHERE groupId = ?";
   const values = [groupId];
 
-  db.run("SELECT * FROM Groups WHERE groupId = ?",[groupId],function(error,group){
+  db.get("SELECT * FROM Groups WHERE groupId = ?",[groupId],function(error,group){
     if(error){
 
     }else if(!group){//no acount found
