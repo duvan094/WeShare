@@ -2,7 +2,7 @@
 
 
 //Add a group member
-app.post("/group-members", function(req, res) {
+app.post("/group-members", function(req, res){
 	const body = req.body;
 	const groupId = body.groupId;
 	const userId = body.userId;

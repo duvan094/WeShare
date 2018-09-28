@@ -1,7 +1,15 @@
-//everything about account should go here
+const vars = require('./variables');
+
+router = vars.express.Router();
+
+const db = vars.db;
+
+router.use(vars.bodyParser.json());
+router.use(vars.bodyParser.urlencoded({extended: false}));
+
 
 //Create new account
-app.post("/accounts", function(req, res){
+router.post("/accounts", function(req, res){
   const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
@@ -19,13 +27,18 @@ app.post("/accounts", function(req, res){
     errorCodes.push("usernameInvalidCharacters");
   }
 
+  //invalidLettersInEmail
+  if(!/^[a-zA-Z1-9]+$/.test(email)){
+    errorCodes.push("invalidLettersInEmail");
+  }
+
   if(errorCodes.length > 0){
     response.status(400).json(errorCodes).end();//Send error codes
     return;
   }
 
   //Hash the password before inserting to database
-  const hashedPassword = bcrypt.hashSync(password, saltRounds)
+  const hashedPassword = vars.bcrypt.hashSync(password, saltRounds)
 
   const query = "INSERT INTO Account (username,hashedPassword) VALUES (?,?)";
   const values = [username,hashedPassword];
@@ -39,7 +52,7 @@ app.post("/accounts", function(req, res){
         res.status(500).end();
       }
     }else{
-      res.setHeader("location","/groups/"+this.lastID);
+      res.setHeader("location","/accounts/"+this.lastID);
       res.status(201).end();
     }
   });
@@ -47,7 +60,7 @@ app.post("/accounts", function(req, res){
 
 //Retrieve single account
 //get id
-app.get("/accounts/:id", function(req, res) {
+router.get("/accounts/:id", function(req, res) {
 	const id = parseInt(req.params.id);
 	const query = "SELECT * FROM Account WHERE id= ?";
 	db.get(query, [id], function(error, post) {
@@ -60,7 +73,64 @@ app.get("/accounts/:id", function(req, res) {
 });
 
 //PUT Update account
-app.put("/accounts/:id", function(req, res){
+router.put("/accounts/:id", function(req, res){
+  const username = req.body.username;
+  const password = req.body.password;
+  const email = req.body.email;
 
+  let errorCodes = [];
+
+  if(username.length < 4){  // Validate it
+    errorCodes.push("usernameTooShort");
+  }else if(username.length > 20){
+    errorCodes.push("usernameTooLong");
+  }
+  if(!/^[a-zA-Z1-9]+$/.test(username)){
+    errorCodes.push("usernameInvalidCharacters");
+  }
+
+  if(errorCodes.length > 0){
+    response.status(400).json(errorCodes).end();//Send error codes
+    return;
+  }
+
+  const query = "UPDATE Account SET username = ?, password = ?, email = ?";
+  const values = [username,email];
+
+  db.run(query,values,function(error){
+    if(error){
+      response.status(500).end();
+    }else{
+      response.status(201).end();
+    }
+  });
 });
+
 //Delete account
+
+router.delete("/accounts/:id", function(req, res){
+  const groupId = req.body.groupId;
+
+  const query = "DELETE * FROM Groups WHERE groupId = ?";
+  const values = [groupId];
+
+  db.get("SELECT * FROM Groups WHERE groupId = ?",[groupId],function(error,group){
+    if(error){
+
+    }else if(!group){//no acount found
+      response.status(400).send("groupNotFound").end();
+      return;
+    }else{
+      db.run(query,values,function(error){
+        if(error){
+          response.status(500).end();
+        }else{
+          response.status(201).end();
+        }
+      });
+    }
+  });
+});
+
+
+module.exports = router

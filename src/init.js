@@ -1,17 +1,7 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const sqlite3 = require('sqlite3');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
 
-const db = new sqlite3.Database("my-database.db");
+const router = express.Router();
 
-const app = express();
-
-const saltRounds = 10;//How many times the password is hashed
-const serverSecret = "jacobjhaskjhdjakhdkahdjakasdoliver"; //
-
-app.use(function corsMiddleware(request, response, next){
+router.use(function corsMiddleware(request, response, next){
  response.header("Access-Control-Allow-Origin", "http://localhost:3000");
  response.header("Access-Control-Allow-Methods", "*");
  response.header("Access-Control-Allow-Headers", "*");
@@ -19,12 +9,9 @@ app.use(function corsMiddleware(request, response, next){
  next();
 });
 
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
 
 // Tell the database to use foreign keys.
 db.run("PRAGMA foreign_keys = ON");
-
 
 db.run(`
   CREATE TABLE IF NOT EXISTS Account (
