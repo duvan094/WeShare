@@ -2,7 +2,7 @@
 
 
 //Add a group member
-app.post("/group-members", function(req, res){
+app.post("/", function(req, res){
 	const body = req.body;
 	const groupId = body.groupId;
 	const userId = body.userId;
@@ -31,7 +31,7 @@ app.post("/group-members", function(req, res){
 });
 
 //View all group members
-app.get("/group-members/:id", function(req, res){
+app.get("/:id", function(req, res){
 	const id = parseInt(req.params.id);
 	const query = "SELECT * FROM groupMember WHERE id= ?";
 	const values = [id];
@@ -46,7 +46,7 @@ app.get("/group-members/:id", function(req, res){
 });
 
 //Delete a group-member
-app.delete("/group-members/:id", function(req, res) {
+app.delete("/:id", function(req, res) {
 	const id = parseInt(req.params.id);
 	const query = "DELETE * FROM groupMember WHERE id = ?";
 	const values = [id];

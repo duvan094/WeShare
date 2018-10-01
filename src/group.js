@@ -1,7 +1,7 @@
 //everything about Group's should go here
 
 //Create new group
-app.post("/groups", function(req, res){
+app.post("/", function(req, res){
   const body = req.body;
   const adminId = body.adminId;
   const groupName = body.groupName;
@@ -53,7 +53,7 @@ app.post("/groups", function(req, res){
 
 
 //Retrieve all Groups
-app.get("/groups",function(req, res){
+app.get("/",function(req, res){
  const query = "SELECT * FROM 'Group' WHERE privateGroup = 0";
 
  db.get(query, function(error, post){
@@ -70,7 +70,7 @@ app.get("/groups",function(req, res){
 });
 
 //Retrieve single Group
-app.get("/groups/:id", function(req, res){
+app.get("/:id", function(req, res){
  const id = parseInt(req.params.groupId);
  const query = "SELECT * FROM 'Group' WHERE groupId = ?";
  const values = [id];
@@ -89,7 +89,7 @@ app.get("/groups/:id", function(req, res){
 });
 
 //Update Group
-app.put("/groups/:id", function(req, res){
+app.put("/:id", function(req, res){
   const body = req.body;
   const groupId = body.groupId;
   const groupName = body.groupName;
@@ -128,7 +128,7 @@ app.put("/groups/:id", function(req, res){
 });
 
 //Delete Groups
-app.delete("/groups/:id",function(req, res){
+app.delete("/:id",function(req, res){
   const groupId = req.body.groupId;
   const values = [groupId];
 
