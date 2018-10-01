@@ -1,13 +1,14 @@
-const vars = require('./variables');
+const express = require('express');
+const bodyParser = require('body-parser');
+const bcrypt = require('bcryptjs');
+
 const initDB = require('./initDB');
 
-router = vars.express.Router();
+router = express.Router();
 
 const db = initDB.db;
 
-router.use(vars.bodyParser.json());
-router.use(vars.bodyParser.urlencoded({extended: false}));
-
+router.use(bodyParser.json());
 
 //Create new account
 router.post("/accounts", function(req, res){
@@ -39,7 +40,7 @@ router.post("/accounts", function(req, res){
   }
 
   //Hash the password before inserting to database
-  const hashedPassword = vars.bcrypt.hashSync(password, saltRounds)
+  const hashedPassword = bcrypt.hashSync(password, saltRounds)
 
   const query = "INSERT INTO Account (username,hashedPassword) VALUES (?,?)";
   const values = [username,hashedPassword];
