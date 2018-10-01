@@ -1,14 +1,7 @@
+const vars = require('./variables');
 
-const router = express.Router();
-
-router.use(function corsMiddleware(request, response, next){
- response.header("Access-Control-Allow-Origin", "http://localhost:3000");
- response.header("Access-Control-Allow-Methods", "*");
- response.header("Access-Control-Allow-Headers", "*");
- response.header("Access-Control-Expose-Headers", "*");
- next();
-});
-
+const router = vars.express.Router();
+const db = vars.db;
 
 // Tell the database to use foreign keys.
 db.run("PRAGMA foreign_keys = ON");
@@ -23,7 +16,7 @@ db.run(`
 `);
 
 db.run(`
-  CREATE TABLE IF NOT EXISTS Groups (
+  CREATE TABLE IF NOT EXISTS 'Group' (
     groupId INTEGER PRIMARY KEY AUTOINCREMENT,
     adminId INTEGER NOT NULL,
     groupName TEXT NOT NULL UNIQUE,
@@ -43,3 +36,5 @@ db.run(`
     FOREIGN KEY(userId) REFERENCES Account(id)
   )
 `);
+
+module.exports = router;
