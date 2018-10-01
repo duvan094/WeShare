@@ -133,4 +133,4 @@ router.delete("/accounts/:id", function(req, res){
 });
 
 
-module.exports = router
+module.exports = router;
