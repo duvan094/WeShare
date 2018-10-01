@@ -3,15 +3,18 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 
 const initDB = require('./initDB');
+const vars = require('./variables');
 
 router = express.Router();
 
 const db = initDB.db;
+const saltRounds = vars.saltRounds;
+
 
 router.use(bodyParser.json());
 
 //Create new account
-router.post("/accounts", function(req, res){
+router.post("/", function(req, res){
   const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
@@ -20,7 +23,7 @@ router.post("/accounts", function(req, res){
 
   if(username.length < 4){  // Validate it
     errorCodes.push("usernameTooShort");
-  }else if(groupName.length > 20){
+  }else if(username.length > 20){
     errorCodes.push("usernameTooLong");
   }
 
@@ -30,20 +33,20 @@ router.post("/accounts", function(req, res){
   }
 
   //invalidLettersInEmail
-  if(!/^[a-zA-Z1-9]+$/.test(email)){
+  /*if(!/^[a-zA-Z1-9]+$/.test(email)){
     errorCodes.push("invalidLettersInEmail");
-  }
+  }*/
 
   if(errorCodes.length > 0){
-    response.status(400).json(errorCodes).end();//Send error codes
+    res.status(400).json(errorCodes).end();//Send error codes
     return;
   }
 
   //Hash the password before inserting to database
   const hashedPassword = bcrypt.hashSync(password, saltRounds)
 
-  const query = "INSERT INTO Account (username,hashedPassword) VALUES (?,?)";
-  const values = [username,hashedPassword];
+  const query = "INSERT INTO Account (username,hashedPassword,email) VALUES (?,?,?)";
+  const values = [username,hashedPassword,email];
 
   db.run(query,values,function(error){
     if(error){
@@ -62,7 +65,7 @@ router.post("/accounts", function(req, res){
 
 //Retrieve single account
 //get id
-router.get("/accounts/:id", function(req, res) {
+router.get("/:id", function(req, res) {
 	const id = parseInt(req.params.id);
 	const query = "SELECT * FROM Account WHERE id= ?";
 	db.get(query, [id], function(error, post) {
@@ -75,7 +78,7 @@ router.get("/accounts/:id", function(req, res) {
 });
 
 //PUT Update account
-router.put("/accounts/:id", function(req, res){
+router.put("/:id", function(req, res){
   const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
@@ -110,7 +113,7 @@ router.put("/accounts/:id", function(req, res){
 
 //Delete account
 
-router.delete("/accounts/:id", function(req, res){
+router.delete("/:id", function(req, res){
   const groupId = req.body.groupId;
 
   const query = "DELETE * FROM Groups WHERE groupId = ?";

@@ -6,7 +6,9 @@ const express = require('express');
 
 const app = express();
 
+app.use(require('./src/index'));
 
-app.use(require('./src'));
+//app.use('/src', require('./src'));
+//app.use(require('./src'));
 
 app.listen(3000);

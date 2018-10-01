@@ -1,6 +1,6 @@
 var express = require('express'), router = express.Router();
 
 require('./initDB');
-router.use('/account', require('./account'));
+router.use('/accounts', require('./account'));
 
 module.exports = router;
