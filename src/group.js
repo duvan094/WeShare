@@ -38,7 +38,7 @@ app.post("/groups", function(req, res){
   db.run(query,values,function(error){
     if(error){
       //If the groupName fails because it's not unique
-      if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: Groups.groupName"){
+      if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: 'Group'.groupName"){
         res.status(400).json(["groupNameNotUnique"]);
       }else{
         res.status(500).end();
@@ -53,7 +53,7 @@ app.post("/groups", function(req, res){
 
 
 //Retrieve all Groups
-app.get("/groups", function(req, res){
+app.get("/groups",function(req, res){
  const query = "SELECT * FROM 'Group' WHERE privateGroup = 0";
 
  db.get(query, function(error, post){
@@ -75,7 +75,7 @@ app.get("/groups/:id", function(req, res){
  const query = "SELECT * FROM 'Group' WHERE groupId = ?";
  const values = [id];
 
- db.get(query,values, function(error, post){
+ db.get(query, values, function(error, post){
    if(error){
      response.status(500).send(error);
    }else{
@@ -128,19 +128,18 @@ app.put("/groups/:id", function(req, res){
 });
 
 //Delete Groups
-app.delete("/groups/:id", function(req, res){
+app.delete("/groups/:id",function(req, res){
   const groupId = req.body.groupId;
-
-  const query = "DELETE * FROM 'Group' WHERE groupId = ?";
   const values = [groupId];
 
-  db.get("SELECT * FROM 'Group' WHERE groupId = ?",[groupId],function(error,group){
+  db.get("SELECT * FROM 'Group' WHERE groupId = ?",values,function(error,group){
     if(error){
 
     }else if(!group){//no acount found
       response.status(400).send("groupNotFound").end();
       return;
     }else{
+      const query = "DELETE * FROM 'Group' WHERE groupId = ?";
       db.run(query,values,function(error){
         if(error){
           response.status(500).end();
