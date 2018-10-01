@@ -29,7 +29,7 @@ app.post("/groups", function(req, res){
   }
 
   const query = `
-    INSERT INTO Groups (adminId,groupName,platformName,platformUsername,platformFee,paymentDate,privateGroup)
+    INSERT INTO 'Group' (adminId,groupName,platformName,platformUsername,platformFee,paymentDate,privateGroup)
     VALUES (?,?,?,?,?,?,?)
   `;
 
@@ -54,7 +54,7 @@ app.post("/groups", function(req, res){
 
 //Retrieve all Groups
 app.get("/groups", function(req, res){
- const query = "SELECT * FROM Groups WHERE privateGroup = 0";
+ const query = "SELECT * FROM 'Group' WHERE privateGroup = 0";
 
  db.get(query, function(error, post){
    if(error){
@@ -72,7 +72,7 @@ app.get("/groups", function(req, res){
 //Retrieve single Group
 app.get("/groups/:id", function(req, res){
  const id = parseInt(req.params.groupId);
- const query = "SELECT * FROM Groups WHERE groupId = ?";
+ const query = "SELECT * FROM 'Group' WHERE groupId = ?";
  const values = [id];
 
  db.get(query,values, function(error, post){
@@ -115,7 +115,7 @@ app.put("/groups/:id", function(req, res){
     return;
   }
 
-  const query = "UPDATE Groups SET groupName = ?, platformUsername = ?, platformFee = ?, paymentDate = ?, privateGroup = ? WHERE groupId = ?";
+  const query = "UPDATE 'Group' SET groupName = ?, platformUsername = ?, platformFee = ?, paymentDate = ?, privateGroup = ? WHERE groupId = ?";
   const values = [groupName,platformUsername,platformFee,paymentDate,privateGroup,groupId];
 
   db.run(query,values,function(error){
@@ -131,10 +131,10 @@ app.put("/groups/:id", function(req, res){
 app.delete("/groups/:id", function(req, res){
   const groupId = req.body.groupId;
 
-  const query = "DELETE * FROM Groups WHERE groupId = ?";
+  const query = "DELETE * FROM 'Group' WHERE groupId = ?";
   const values = [groupId];
 
-  db.get("SELECT * FROM Groups WHERE groupId = ?",[groupId],function(error,group){
+  db.get("SELECT * FROM 'Group' WHERE groupId = ?",[groupId],function(error,group){
     if(error){
 
     }else if(!group){//no acount found
