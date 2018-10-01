@@ -1,7 +1,15 @@
 //everything about Group's should go here
+const express = require('express');
+const bodyParser = require('body-parser');
+const initDB = require('./initDB');
+
+router = express.Router();
+
+const db = initDB.db;
+
 
 //Create new group
-app.post("/", function(req, res){
+router.post("/", function(req, res){
   const body = req.body;
   const adminId = body.adminId;
   const groupName = body.groupName;
@@ -53,7 +61,7 @@ app.post("/", function(req, res){
 
 
 //Retrieve all Groups
-app.get("/",function(req, res){
+router.get("/",function(req, res){
  const query = "SELECT * FROM 'Group' WHERE privateGroup = 0";
 
  db.get(query, function(error, post){
@@ -70,7 +78,7 @@ app.get("/",function(req, res){
 });
 
 //Retrieve single Group
-app.get("/:id", function(req, res){
+router.get("/:id", function(req, res){
  const id = parseInt(req.params.groupId);
  const query = "SELECT * FROM 'Group' WHERE groupId = ?";
  const values = [id];
@@ -89,7 +97,7 @@ app.get("/:id", function(req, res){
 });
 
 //Update Group
-app.put("/:id", function(req, res){
+router.put("/:id", function(req, res){
   const body = req.body;
   const groupId = body.groupId;
   const groupName = body.groupName;
@@ -128,7 +136,7 @@ app.put("/:id", function(req, res){
 });
 
 //Delete Groups
-app.delete("/:id",function(req, res){
+router.delete("/:id",function(req, res){
   const groupId = req.body.groupId;
   const values = [groupId];
 
@@ -150,3 +158,5 @@ app.delete("/:id",function(req, res){
     }
   });
 });
+
+module.exports = router;
