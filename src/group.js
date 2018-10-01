@@ -2,11 +2,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const initDB = require('./initDB');
-
-router = express.Router();
-
 const db = initDB.db;
 
+router = express.Router();
+router.use(bodyParser.json());
 
 //Create new group
 router.post("/", function(req, res){
