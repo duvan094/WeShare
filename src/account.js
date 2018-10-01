@@ -50,9 +50,11 @@ router.post("/", function(req, res){
 
   db.run(query,values,function(error){
     if(error){
-      //If the username fails because it's not unique
+      //Check if the username or email fails because they are not unique
       if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: Account.username"){
         res.status(400).json(["usernameNotUnique"]);
+      }else if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: Account.email"){
+        res.status(400).json(["emailAlreadyExist"]);
       }else{
         res.status(500).end();
       }
@@ -136,6 +138,5 @@ router.delete("/:id", function(req, res){
     }
   });
 });
-
 
 module.exports = router;
