@@ -1,8 +1,9 @@
 const vars = require('./variables');
+const initDB = require('./initDB');
 
 router = vars.express.Router();
 
-const db = vars.db;
+const db = initDB.db;
 
 router.use(vars.bodyParser.json());
 router.use(vars.bodyParser.urlencoded({extended: false}));
