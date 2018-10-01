@@ -27,7 +27,7 @@ app.post("/group-members", function(req, res){
 				}
 			});
 		}
-	}
+	});
 });
 
 //View all group members
