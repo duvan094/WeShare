@@ -1,8 +1,17 @@
 //everything about GroupMembers should go here
+const express = require('express');
+const bodyParser = require('body-parser');
+const initDB = require('./initDB');
 
+router = express.Router();
+
+const db = initDB.db;
+
+
+router.use(bodyParser.json());
 
 //Add a group member
-app.post("/", function(req, res){
+router.post("/", function(req, res){
 	const body = req.body;
 	const groupId = body.groupId;
 	const userId = body.userId;
@@ -31,7 +40,7 @@ app.post("/", function(req, res){
 });
 
 //View all group members
-app.get("/:id", function(req, res){
+router.get("/:id", function(req, res){
 	const id = parseInt(req.params.id);
 	const query = "SELECT * FROM groupMember WHERE id= ?";
 	const values = [id];
@@ -46,7 +55,7 @@ app.get("/:id", function(req, res){
 });
 
 //Delete a group-member
-app.delete("/:id", function(req, res) {
+router.delete("/:id", function(req, res) {
 	const id = parseInt(req.params.id);
 	const query = "DELETE * FROM groupMember WHERE id = ?";
 	const values = [id];
@@ -69,3 +78,5 @@ app.delete("/:id", function(req, res) {
 		}
   });
 });
+
+module.exports = router; 
