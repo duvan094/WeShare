@@ -97,7 +97,7 @@ router.put("/:id", function(req, res){
   }
 
   if(errorCodes.length > 0){
-    response.status(400).json(errorCodes).end();//Send error codes
+    res.status(400).json(errorCodes).end();//Send error codes
     return;
   }
 
@@ -106,9 +106,9 @@ router.put("/:id", function(req, res){
 
   db.run(query,values,function(error){
     if(error){
-      response.status(500).end();
+      res.status(500).end();
     }else{
-      response.status(201).end();
+      res.status(201).end();
     }
   });
 });
