@@ -22,6 +22,7 @@ db.run(`
     paymentDate DATE,
     platformUsername TEXT NOT NULL,
     platformFee INT NOT NULL,
+    privateGroup BOOLEAN,
     FOREIGN KEY(adminId) REFERENCES Account(id)
   )
 `);
@@ -31,7 +32,8 @@ db.run(`
   CREATE TABLE IF NOT EXISTS GroupMember (
     groupId INTEGER NOT NULL,
     accountId INTEGER NOT NULL,
-    FOREIGN KEY(userId) REFERENCES Account(id)
+    FOREIGN KEY(accountId) REFERENCES Account(id),
+    FOREIGN KEY(groupId) REFERENCES 'Group'(id)
   )
 `);
 
