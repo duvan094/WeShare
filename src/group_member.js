@@ -55,10 +55,11 @@ router.get("/:id", function(req, res){
 });
 
 //Delete a group-member
-router.delete("/:id", function(req, res) {
-	const id = parseInt(req.params.id);
-	const query = "DELETE * FROM groupMember WHERE id = ?";
-	const values = [id];
+router.delete("/", function(req, res) {
+	const groupId = parseInt(req.query.groupId);
+	const accountId = parseInt(req.query.accountId);
+	const query = "DELETE FROM groupMember WHERE groupId = ? AND accountId = ?";
+	const values = [groupId, accountId];
 
  	db.get('SELECT * FROM Account Where id = ?', [accountId], function(error, account) {
 		if(error){
