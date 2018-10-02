@@ -87,9 +87,9 @@ router.get("/:id", function(req, res){
      response.status(500).send(error);
    }else{
      if(post){
-       response.status(200).send(post);
+       res.status(200).send(post);
      }else{
-      response.status(404).end();
+      res.status(404).end();
      }
    }
  });
@@ -127,9 +127,9 @@ router.put("/:id", function(req, res){
 
   db.run(query,values,function(error){
     if(error){
-      response.status(500).end();
+      res.status(500).end();
     }else{
-      response.status(201).end();
+      res.status(201).end();
     }
   });
 });
@@ -143,15 +143,15 @@ router.delete("/:id",function(req, res){
     if(error){
 
     }else if(!group){//no acount found
-      response.status(400).send("groupNotFound").end();
+      res.status(400).send("groupNotFound").end();
       return;
     }else{
       const query = "DELETE * FROM 'Group' WHERE groupId = ?";
       db.run(query,values,function(error){
         if(error){
-          response.status(500).end();
+          res.status(500).end();
         }else{
-          response.status(201).end();
+          res.status(201).end();
         }
       });
     }
