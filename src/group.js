@@ -26,12 +26,12 @@ router.post("/", function(req, res){
     errorCodes.push("groupNameTooLong");
   }
 
-  if(!/^[a-zA-Z1-9]+$/.test(groupName)){
+  if(!/^[a-zA-Z1-9 ]+$/.test(groupName)){
     errorCodes.push("groupNameInvalidCharacters");
   }
 
   if(errorCodes.length > 0){
-    response.status(400).json(errorCodes).end();//Send error codes
+    res.status(400).json(errorCodes).end();//Send error codes
     return;
   }
 
@@ -48,7 +48,9 @@ router.post("/", function(req, res){
       if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: 'Group'.groupName"){
         res.status(400).json(["groupNameNotUnique"]);
       }else{
-        res.status(500).end();
+        console.log(values);
+        console.log(query);
+        res.status(500).send(error).end();
       }
     }else{
       res.setHeader("location","/groups/"+this.lastID);
@@ -70,7 +72,7 @@ router.get("/",function(req, res){
      if(post){
        res.status(200).send(post);
      }else{
-      res.status(404).end();
+       res.status(404).end();
      }
    }
  });
@@ -79,12 +81,12 @@ router.get("/",function(req, res){
 //Retrieve single Group
 router.get("/:id", function(req, res){
  const id = parseInt(req.params.groupId);
- const query = "SELECT * FROM 'Group' WHERE groupId = ?";
+ const query = "SELECT * FROM 'Group' WHERE id = ?";
  const values = [id];
 
  db.get(query, values, function(error, post){
    if(error){
-     response.status(500).send(error);
+     res.status(500).send(error);
    }else{
      if(post){
        res.status(200).send(post);
@@ -97,8 +99,8 @@ router.get("/:id", function(req, res){
 
 //Update Group
 router.put("/:id", function(req, res){
+  const id = parseInt(req.params.id);
   const body = req.body;
-  const groupId = body.groupId;
   const groupName = body.groupName;
   const platformUsername = body.platformUsername;
   const platformFee = body.platformFee;
@@ -118,12 +120,12 @@ router.put("/:id", function(req, res){
   }
 
   if(errorCodes.length > 0){
-    response.status(400).json(errorCodes).end();//Send error codes
+    res.status(400).json(errorCodes).end();//Send error codes
     return;
   }
 
-  const query = "UPDATE 'Group' SET groupName = ?, platformUsername = ?, platformFee = ?, paymentDate = ?, privateGroup = ? WHERE groupId = ?";
-  const values = [groupName,platformUsername,platformFee,paymentDate,privateGroup,groupId];
+  const query = "UPDATE 'Group' SET groupName = ?, platformUsername = ?, platformFee = ?, paymentDate = ?, privateGroup = ? WHERE id = ?";
+  const values = [groupName,platformUsername,platformFee,paymentDate,privateGroup,id];
 
   db.run(query,values,function(error){
     if(error){
@@ -136,22 +138,22 @@ router.put("/:id", function(req, res){
 
 //Delete Groups
 router.delete("/:id",function(req, res){
-  const groupId = req.body.groupId;
-  const values = [groupId];
+  const id = parseInt(req.params.id);
+  const values = [id];
 
-  db.get("SELECT * FROM 'Group' WHERE groupId = ?",values,function(error,group){
+  db.get("SELECT * FROM 'Group' WHERE id = ?",values,function(error,group){
     if(error){
-
+      res.status(500).send(error).end();
     }else if(!group){//no acount found
       res.status(400).send("groupNotFound").end();
       return;
     }else{
-      const query = "DELETE * FROM 'Group' WHERE groupId = ?";
+      const query = "DELETE FROM 'Group' WHERE id = ?";
       db.run(query,values,function(error){
         if(error){
           res.status(500).end();
         }else{
-          res.status(201).end();
+          res.status(204).end();
         }
       });
     }
