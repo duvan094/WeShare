@@ -14,13 +14,13 @@ router.use(bodyParser.json());
 router.post("/", function(req, res){
 	const body = req.body;
 	const groupId = body.groupId;
-	const userId = body.userId;
+	const accountId = body.accountId;
 
-	const values = [userId, groupId];
-	const query = "INSERT INTO groupMember(userId,groupId) VALUES (?,?)";
+	const values = [groupId, accountId];
+	const query = "INSERT INTO groupMember(groupId,accountId) VALUES (?,?)";
 
 	//check if user is in the group already. if not add the group memeber.
-	db.get("SELECT * FROM GroupMember WHERE userId = ? AND groupId = ?", values, function(error, groupMember){
+	db.get("SELECT * FROM GroupMember WHERE groupId = ? AND accountId = ?", values, function(error, groupMember){
 		if(error){
 			res.status(500).end();
 			return;
