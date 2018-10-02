@@ -45,11 +45,11 @@ router.get("/:id", function(req, res){
 	const query = "SELECT * FROM groupMember WHERE id= ?";
 	const values = [id];
 
-	db.get(query, values, function(error, post){
+	db.get(query, values, function(error, posts){
 		if (error){
 			res.status(500).send("Internal Error");
 		}else{
-			res.status(200).send(post);
+			res.status(200).send(posts);
 		}
 	});
 });

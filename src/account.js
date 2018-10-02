@@ -124,7 +124,7 @@ router.delete("/:id", function(req, res){
   db.get("SELECT * FROM Groups WHERE groupId = ?",[groupId],function(error,group){
     if(error){
 
-    }else if(!group){//no acount found
+    }else if(!group){//no account found
       response.status(400).send("groupNotFound").end();
       return;
     }else{
