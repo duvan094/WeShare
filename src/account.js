@@ -72,51 +72,68 @@ router.get("/:id", function(req, res) {
 	const query = "SELECT * FROM Account WHERE id= ?";
 	db.get(query, [id], function(error, post) {
 		if (error) {
-			res.status(500).send("Internal Error");
+			res.status(500).json(["Internal Error"]).end();
 		}else if(!post){
-      res.status(400).send("accountNotFound");
+      res.status(400).json(["accountNotFound"]).end();
     } else {
-			res.status(200).send(post);
+			res.status(200).send(post).end();
 		}
 	});
 });
 
 //PUT Update account
 router.put("/:id", function(req, res){
+  const id = parseInt(req.params.id);
   const username = req.body.username;
-  const password = req.body.password;
+  const newPassword = req.body.newPassword;
+  const oldPassword = req.body.oldPassword;
   const email = req.body.email;
 
-  let errorCodes = [];
-
-  if(username.length < 4){  // Validate it
-    errorCodes.push("usernameTooShort");
-  }else if(username.length > 20){
-    errorCodes.push("usernameTooLong");
-  }
-  if(!/^[a-zA-Z1-9]+$/.test(username)){
-    errorCodes.push("usernameInvalidCharacters");
-  }
-
-  if(errorCodes.length > 0){
-    res.status(400).json(errorCodes).end();//Send error codes
-    return;
-  }
-
-  const query = "UPDATE Account SET username = ?, password = ?, email = ?";
-  const values = [username,email];
-
-  db.run(query,values,function(error){
+  db.get('Select * FROM Account WHERE id = ?',[id],function(error,account){
     if(error){
       res.status(500).end();
+    }else if(!account){//no account found
+      res.status(400).json(["accountNotFound"]);
     }else{
-      res.status(201).end();
+      //Check the old password compares to the hashed password in the database
+      if(bcrypt.compareSync(oldPassword, account.hashedPassword)){
+
+        let errorCodes = [];
+
+        if(username.length < 4){  // Validate it
+          errorCodes.push("usernameTooShort");
+        }else if(username.length > 20){
+          errorCodes.push("usernameTooLong");
+        }
+        if(!/^[a-zA-Z1-9]+$/.test(username)){
+          errorCodes.push("usernameInvalidCharacters");
+        }
+
+        if(errorCodes.length > 0){
+          res.status(400).json(errorCodes).end();//Send error codes
+          return;
+        }
+
+        const hashedPassword = bcrypt.hashSync(newPassword, saltRounds)
+
+        const query = "UPDATE Account SET username = ?, hashedPassword = ?, email = ? WHERE id = ?";
+        const values = [username,hashedPassword,email,id];
+
+        db.run(query,values,function(error){
+          if(error){
+            res.status(500).end();
+          }else{
+            res.status(201).end();
+          }
+        });
+      }else{
+        res.status(401).end();
+      }
     }
   });
 });
 
 //Delete account
-
 router.delete("/:id", function(req, res){
   const id = req.body.id;
 
@@ -125,9 +142,9 @@ router.delete("/:id", function(req, res){
 
   db.get("SELECT * FROM Account WHERE id = ?",values,function(error,account){
     if(error){
-
+      response.status(500).send(error).end();
     }else if(!account){//no account found
-      response.status(400).send("accountNotFound").end();
+      response.status(404).send("accountNotFound").end();
       return;
     }else{
       db.run(query,values,function(error){
