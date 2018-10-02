@@ -73,7 +73,9 @@ router.get("/:id", function(req, res) {
 	db.get(query, [id], function(error, post) {
 		if (error) {
 			res.status(500).send("Internal Error");
-		} else {
+		}else if(!post){
+      res.status(400).send("accountNotFound");
+    } else {
 			res.status(200).send(post);
 		}
 	});
@@ -116,16 +118,16 @@ router.put("/:id", function(req, res){
 //Delete account
 
 router.delete("/:id", function(req, res){
-  const groupId = req.body.groupId;
+  const id = req.body.id;
 
-  const query = "DELETE * FROM Groups WHERE groupId = ?";
-  const values = [groupId];
+  const query = "DELETE * FROM Account WHERE id = ?";
+  const values = [id];
 
-  db.get("SELECT * FROM Groups WHERE groupId = ?",[groupId],function(error,group){
+  db.get("SELECT * FROM Account WHERE id = ?",values,function(error,account){
     if(error){
 
-    }else if(!group){//no account found
-      response.status(400).send("groupNotFound").end();
+    }else if(!account){//no account found
+      response.status(400).send("accountNotFound").end();
       return;
     }else{
       db.run(query,values,function(error){
