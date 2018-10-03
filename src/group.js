@@ -15,7 +15,6 @@ router.post("/", function(req, res){
   const platformName = body.platformName;
   const platformUsername = body.platformUsername;
   const platformFee = body.platformFee;
-  const paymentDate = body.paymentDate;
   const privateGroup = body.privateGroup;
 
   let errorCodes = [];
@@ -36,11 +35,11 @@ router.post("/", function(req, res){
   }
 
   const query = `
-    INSERT INTO 'Group' (adminId,groupName,platformName,platformUsername,platformFee,paymentDate,privateGroup)
-    VALUES (?,?,?,?,?,?,?)
+    INSERT INTO 'Group' (adminId,groupName,platformName,platformUsername,platformFee,privateGroup)
+    VALUES (?,?,?,?,?,?)
   `;
 
-  const values = [adminId,groupName,platformName,platformUsername,platformFee,paymentDate,privateGroup];
+  const values = [adminId,groupName,platformName,platformUsername,platformFee,privateGroup];
 
   db.run(query,values,function(error){
     if(error){
@@ -48,13 +47,22 @@ router.post("/", function(req, res){
       if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: 'Group'.groupName"){
         res.status(400).json(["groupNameNotUnique"]);
       }else{
-        console.log(values);
-        console.log(query);
         res.status(500).send(error).end();
       }
     }else{
-      res.setHeader("location","/groups/"+this.lastID);
-      res.status(201).end();
+
+      const lastID = this.lastID;
+
+      const values = [lastID, adminId];
+    	const query = "INSERT INTO groupMember(groupId,accountId) VALUES (?,?)";
+      db.run(query, values, function(error){
+        if(error){
+          res.status(500).end();
+        }else{
+          res.setHeader("location","/groups/"+lastID);
+          res.status(201).end();
+        }
+      });
     }
   });
 });
@@ -104,7 +112,6 @@ router.put("/:id", function(req, res){
   const groupName = body.groupName;
   const platformUsername = body.platformUsername;
   const platformFee = body.platformFee;
-  const paymentDate = body.paymentDate;
   const privateGroup = body.privateGroup;
 
   let errorCodes = [];
@@ -124,8 +131,8 @@ router.put("/:id", function(req, res){
     return;
   }
 
-  const query = "UPDATE 'Group' SET groupName = ?, platformUsername = ?, platformFee = ?, paymentDate = ?, privateGroup = ? WHERE id = ?";
-  const values = [groupName,platformUsername,platformFee,paymentDate,privateGroup,id];
+  const query = "UPDATE 'Group' SET groupName = ?, platformUsername = ?, platformFee = ?, privateGroup = ? WHERE id = ?";
+  const values = [groupName,platformUsername,platformFee,privateGroup,id];
 
   db.run(query,values,function(error){
     if(error){

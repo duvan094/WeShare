@@ -19,7 +19,7 @@ db.run(`
     adminId INTEGER NOT NULL,
     groupName TEXT NOT NULL UNIQUE,
     platformName TEXT NOT NULL,
-    paymentDate DATE,
+    paymentDate DATE DEFAULT (DATE('now', '+1 month')),
     platformUsername TEXT NOT NULL,
     platformFee INT NOT NULL,
     privateGroup BOOLEAN,
