@@ -22,3 +22,4 @@ $RECYCLE.BIN/
 # Operating System Files
 # =========================
 my-database.db
+my-database.db-journal
