@@ -51,7 +51,7 @@ router.get("/:groupId", function(req, res){
 
 	const values = [groupId];
 
-	db.get(query, values, function(error, posts){
+	db.all(query, values, function(error, posts){
 		if (error){
 			res.status(500).send("Internal Error");
 		}else{
