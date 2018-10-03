@@ -40,10 +40,16 @@ router.post("/", function(req, res){
 });
 
 //View all group members
-router.get("/:id", function(req, res){
-	const id = parseInt(req.params.id);
-	const query = "SELECT * FROM groupMember WHERE id= ?";
-	const values = [id];
+router.get("/:groupId", function(req, res){
+	const groupId = parseInt(req.params.groupId);
+	const query = `
+    SELECT Account.id, Account.username, Account.email
+    FROM GroupMember
+    Join Account ON Account.id = GroupMember.accountId
+    WHERE GroupMember.groupId = ?;
+  `;
+
+	const values = [groupId];
 
 	db.get(query, values, function(error, posts){
 		if (error){
@@ -80,4 +86,4 @@ router.delete("/", function(req, res) {
   });
 });
 
-module.exports = router; 
+module.exports = router;
