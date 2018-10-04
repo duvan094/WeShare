@@ -1,9 +1,18 @@
-//everything about login here
+const express = require('express');
+const bodyParser = require('body-parser');
 
-//Used to login
+const initDB = require('./initDB');
 const vars = require('./variables');
 
-app.post("/", function(req, res){
+router = express.Router();
+
+const serverSecret = vars.serverSecret;
+const db = initDB.db;
+
+router.use(bodyParser.urlencoded({extended: false}));
+
+
+router.post("/", function(req, res){
 
   const username = req.body.username;
   const password = req.body.password;
@@ -36,4 +45,3 @@ app.post("/", function(req, res){
     }
   });
 });
-
