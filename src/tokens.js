@@ -9,6 +9,7 @@ router = express.Router();
 const serverSecret = vars.serverSecret;
 const db = initDB.db;
 
+router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({extended: false}));
 
 
@@ -33,7 +34,7 @@ router.post("/", function(req, res){
         // Create a new token that can be sent to client
         const accessToken = jwt.sign({accountId: account.id}, serverSecret);
         const idToken = jwt.sign({sub:account.id, preferred_username:account.username}, serverSecret);
-
+        console.log("u logged in brotha");
         res.status(200).json({
           access_token: accessToken,
           token_type: "Bearer",
@@ -45,3 +46,5 @@ router.post("/", function(req, res){
     }
   });
 });
+
+module.exports = router;
