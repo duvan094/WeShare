@@ -1,6 +1,7 @@
 //everything about login here
 
 //Used to login
+const vars = require('./variables');
 
 app.post("/", function(req, res){
 
@@ -35,3 +36,4 @@ app.post("/", function(req, res){
     }
   });
 });
+
