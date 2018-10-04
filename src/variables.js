@@ -10,5 +10,6 @@ exports.jwt = jwt;
 
 exports.saltRounds = saltRounds;
 exports.serverSecret = serverSecret;
+
 exports.appId = appId;
 exports.appSecret = appSecret;
