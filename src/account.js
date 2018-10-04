@@ -21,6 +21,7 @@ router.post("/", function(req, res){
 
   let errorCodes = [];
 
+
   if(username.length < 4){  // Validate it
     errorCodes.push("usernameTooShort");
   }else if(username.length > 20){
@@ -71,6 +72,9 @@ router.post("/", function(req, res){
 router.get("/:id", function(req, res) {
 	const id = parseInt(req.params.id);
 	const query = "SELECT * FROM Account WHERE id= ?";
+
+  authorizedUser(req,id);
+  
 	db.get(query, [id], function(error, post) {
 		if (error) {
 			res.status(500).json(["Internal Error"]).end();
@@ -88,6 +92,8 @@ router.put("/:id", function(req, res){
   const newPassword = req.body.newPassword;
   const oldPassword = req.body.oldPassword;
   const email = req.body.email;
+
+  authorizedUser(req,id);
 
   db.get('Select * FROM Account WHERE id = ?',[id],function(error,account){
     if(error){
@@ -137,6 +143,8 @@ router.delete("/:id", function(req, res){
   const query = "DELETE FROM Account WHERE id = ?";
   const values = [id];
 
+  authorizedUser(req,id);
+
   db.get("SELECT * FROM Account WHERE id = ?",values,function(error,account){
     if(error){
       res.status(500).send(error).end();
@@ -154,5 +162,27 @@ router.delete("/:id", function(req, res){
     }
   });
 });
+
+
+function authorizedUser(req,accountId){
+  const authorizationHeader = req.get("authorization");
+  const accessToken = authorizationHeader.substr(7);//used to remove "Bearer" in the beginning of accessToken
+
+  let tokenAccountId = null;
+
+  try{//Check if user is authorized
+    const payload = jwt.verify(accessToken,serverSecret);
+    tokenAccountId = payload.accountId;
+  }catch(error){//if the payload fails it means it is tempered with
+    response.status(401).end();//Unathorized
+    return;
+  }
+
+  if(tokenAccountId != accountId){//Check so accountId from matches the one saved in the token
+    response.status(401).end();
+    return;
+  }
+}
+
 
 module.exports = router;
