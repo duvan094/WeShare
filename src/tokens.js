@@ -75,12 +75,5 @@ function authorizedUser(req,accountId = null){
 }
 
 
-
-
-function authorizedAdmin(){
-  //TODO admin validation
-}
-
 module.exports = router;
 module.exports.authorizedUser = authorizedUser;
-module.exports.authorizedUser = authorizedAdmin;
