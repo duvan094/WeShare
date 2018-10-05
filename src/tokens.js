@@ -68,6 +68,8 @@ function authorizedUser(req,accountId = null){
       response.status(401).end();
       return;
     }
+  }else{//Return the tokenAccountId for other validations
+    return tokenAccountId;
   }
 
 }

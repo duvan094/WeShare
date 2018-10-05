@@ -19,7 +19,7 @@ router.post("/", function(req, res){
   const privateGroup = body.privateGroup;
 
   let errorCodes = [];
-  token.authorizedUser(req,id);
+  token.authorizedUser(req,adminId);
 
   if(groupName.length < 4){  // Validate it
     errorCodes.push("groupNameTooShort");
@@ -80,7 +80,7 @@ router.get("/",function(req, res){
     Join 'Group' ON 'Group'.id = GroupMember.groupId
     WHERE 'Group'.privateGroup = 0;
   `;
-  
+
   //See if user is logged in
   token.authorizedUser(req);
 

@@ -32,6 +32,7 @@ db.run(`
   CREATE TABLE IF NOT EXISTS GroupMember (
     groupId INTEGER NOT NULL,
     accountId INTEGER NOT NULL,
+    PRIMARY KEY (groupId, accountId),
     FOREIGN KEY(accountId) REFERENCES Account(id),
     FOREIGN KEY(groupId) REFERENCES 'Group'(id)
   )
