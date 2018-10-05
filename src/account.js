@@ -1,10 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
-
 const initDB = require('./initDB');
 const vars = require('./variables');
-
 const token = require('./tokens');//import verify function
 
 router = express.Router();

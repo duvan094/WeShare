@@ -33,8 +33,10 @@ db.run(`
     groupId INTEGER NOT NULL,
     accountId INTEGER NOT NULL,
     PRIMARY KEY (groupId, accountId),
-    FOREIGN KEY(accountId) REFERENCES Account(id),
+    FOREIGN KEY(accountId) REFERENCES Account(id)
+    ON DELETE CASCADE,
     FOREIGN KEY(groupId) REFERENCES 'Group'(id)
+    ON DELETE CASCADE
   )
 `);
 

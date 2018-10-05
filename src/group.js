@@ -19,8 +19,12 @@ router.post("/", function(req, res){
   const privateGroup = body.privateGroup;
 
   let errorCodes = [];
-  token.authorizedUser(req,adminId);
 
+  if(!token.authorizedUser(req,adminId)){
+    res.status(401).end();//Unathorized
+    return;
+  }
+  
   if(groupName.length < 4){  // Validate it
     errorCodes.push("groupNameTooShort");
   }else if(groupName.length > 20){
@@ -61,6 +65,7 @@ router.post("/", function(req, res){
         if(error){
           res.status(500).end();
         }else{
+          console.log("headerHej");
           res.setHeader("location","/groups/"+lastID);
           res.status(201).end();
         }

@@ -59,14 +59,14 @@ function authorizedUser(req,accountId = null){
     const payload = jwt.verify(accessToken,serverSecret);
     tokenAccountId = payload.accountId;
   }catch(error){//if the payload fails it means it is tempered with
-    response.status(401).end();//Unathorized
-    return;
+    return false;
   }
 
   if(accountId !== null){
-    if(tokenAccountId != accountId){//Check so accountId matches the one saved in the token
-      response.status(401).end();
-      return;
+    if(tokenAccountId !== accountId){//Check so accountId matches the one saved in the token
+      return false;
+    }else{
+      return true;
     }
   }else{//Return the tokenAccountId for other validations
     return tokenAccountId;
