@@ -55,12 +55,18 @@ router.post("/", function(req, res){
   db.run(query,values,function(error){
     if(error){
       //Check if the username or email fails because they are not unique
+      errorCodes = [];
 
       if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: Account.username"){
-        res.status(400).json(["usernameNotUnique"]);
+        errorCodes.push("usernameNotUnique");
       }
       if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: Account.email"){
-        res.status(400).json(["emailAlreadyExist"]);
+        errorCodes.push("emailAlreadyExist");
+      }
+
+      if(errorCodes.length > 0){
+        res.status(400).json(errorCodes).end();//Send error codes
+        return;
       }else{
         res.status(500).end();
       }
