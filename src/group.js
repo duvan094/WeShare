@@ -75,7 +75,7 @@ router.post("/", function(req, res){
 router.get("/",function(req, res){
  const query = "SELECT * FROM 'Group' WHERE privateGroup = 0";
 
- token.authorizedUser(req,id);
+ //token.authorizedUser(req,id);
 
  db.get(query, function(error, post){
    if(error){
@@ -92,14 +92,23 @@ router.get("/",function(req, res){
 
 //Retrieve single Group
 router.get("/:id", function(req, res){
- const id = parseInt(req.params.groupId);
- const query = "SELECT * FROM 'Group' WHERE id = ?";
+  const id = parseInt(req.params.id);
+
+  const query = `
+    SELECT 'Group'.id, 'Group'.adminId, 'Group'.groupName, 'Group'.platformName,
+    'Group'.platformFee, 'Group'.paymentDate, Count(GroupMember.accountId) AS memberCount
+    FROM 'GroupMember'
+    Join 'Group' ON 'Group'.id = GroupMember.groupId
+    WHERE 'GroupMember'.groupId = ?;
+  `;
+
  const values = [id];
 
- token.authorizedUser(req,id);
+// token.authorizedUser(req,id);
 
  db.get(query, values, function(error, post){
    if(error){
+     console.log("test");
      res.status(500).send(error);
    }else{
      if(post){
@@ -120,33 +129,43 @@ router.put("/:id", function(req, res){
   const platformFee = body.platformFee;
   const privateGroup = body.privateGroup;
 
-  let errorCodes = [];
-
-  token.authorizedUser(req,id);
-
-  if(groupName.length < 4){  // Validate it
-    errorCodes.push("groupNameTooShort");
-  }else if(groupName.length > 20){
-    errorCodes.push("groupNameTooLong");
-  }
-
-  if(!/^[a-zA-Z1-9]+$/.test(groupName)){
-    errorCodes.push("groupNameInvalidCharacters");
-  }
-
-  if(errorCodes.length > 0){
-    res.status(400).json(errorCodes).end();//Send error codes
-    return;
-  }
-
-  const query = "UPDATE 'Group' SET groupName = ?, platformUsername = ?, platformFee = ?, privateGroup = ? WHERE id = ?";
-  const values = [groupName,platformUsername,platformFee,privateGroup,id];
-
-  db.run(query,values,function(error){
+  db.get("SELECT * FROM 'Group' WHERE id = ?",[id],function(error,group){
     if(error){
-      res.status(500).end();
+      res.status(500).send(error).end();
+    }else if(!group){//no acount found
+      res.status(400).send("groupNotFound").end();
+      return;
     }else{
-      res.status(201).end();
+      //Check if user is admin of group and allowed to make changes
+      token.authorizedUser(req,group.adminId);
+
+      let errorCodes = [];
+
+      if(groupName.length < 4){  // Validate it
+        errorCodes.push("groupNameTooShort");
+      }else if(groupName.length > 20){
+        errorCodes.push("groupNameTooLong");
+      }
+
+      if(!/^[a-zA-Z1-9]+$/.test(groupName)){
+        errorCodes.push("groupNameInvalidCharacters");
+      }
+
+      if(errorCodes.length > 0){
+        res.status(400).json(errorCodes).end();//Send error codes
+        return;
+      }
+
+      const query = "UPDATE 'Group' SET groupName = ?, platformUsername = ?, platformFee = ?, privateGroup = ? WHERE id = ?";
+      const values = [groupName,platformUsername,platformFee,privateGroup,id];
+
+      db.run(query,values,function(error){
+        if(error){
+          res.status(500).end();
+        }else{
+          res.status(201).end();
+        }
+      });
     }
   });
 });
@@ -155,8 +174,6 @@ router.put("/:id", function(req, res){
 router.delete("/:id",function(req, res){
   const id = parseInt(req.params.id);
   const values = [id];
-  
-  token.authorizedUser(req,id);
 
   db.get("SELECT * FROM 'Group' WHERE id = ?",values,function(error,group){
     if(error){
@@ -165,6 +182,9 @@ router.delete("/:id",function(req, res){
       res.status(400).send("groupNotFound").end();
       return;
     }else{
+      //Check if user is admin of group and allowed to make changes
+      token.authorizedUser(req,group.adminId);
+
       const query = "DELETE FROM 'Group' WHERE id = ?";
       db.run(query,values,function(error){
         if(error){

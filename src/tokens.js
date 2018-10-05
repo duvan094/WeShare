@@ -49,7 +49,6 @@ router.post("/", function(req, res){
   });
 });
 
-
 function authorizedUser(req,accountId){
   const authorizationHeader = req.get("authorization");
   const accessToken = authorizationHeader.substr(7);//used to remove "Bearer" in the beginning of accessToken
@@ -64,7 +63,7 @@ function authorizedUser(req,accountId){
     return;
   }
 
-  if(tokenAccountId != accountId){//Check so accountId from matches the one saved in the token
+  if(tokenAccountId != accountId){//Check so accountId matches the one saved in the token
     response.status(401).end();
     return;
   }
