@@ -63,11 +63,17 @@ function authorizedUser(req,accountId){
     return;
   }
 
-  if(tokenAccountId != accountId){//Check so accountId matches the one saved in the token
-    response.status(401).end();
-    return;
+  if(accountId !== null){
+    if(tokenAccountId != accountId){//Check so accountId matches the one saved in the token
+      response.status(401).end();
+      return;
+    }    
   }
+
 }
+
+
+
 
 function authorizedAdmin(){
   //TODO admin validation

@@ -80,7 +80,7 @@ router.get("/",function(req, res){
     Join 'Group' ON 'Group'.id = GroupMember.groupId
     WHERE 'Group'.privateGroup = 0;
   `;
-
+  //See if user is logged in
  //token.authorizedUser(req,id);
 
  db.get(query, function(error, post){
@@ -109,7 +109,7 @@ router.get("/:id", function(req, res){
   `;
 
  const values = [id];
-
+//Check if user is logged in
 // token.authorizedUser(req,id);
 
  db.get(query, values, function(error, post){

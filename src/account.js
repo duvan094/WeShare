@@ -38,7 +38,7 @@ router.post("/", function(req, res){
   if(!validateEmail(email)){
     errorCodes.push("invalidLettersInEmail");
   }
-  
+
   if(errorCodes.length > 0){
     res.status(400).json(errorCodes).end();//Send error codes
     return;
@@ -81,7 +81,7 @@ router.get("/:id", function(req, res) {
 	const id = parseInt(req.params.id);
 	const query = "SELECT * FROM Account WHERE id= ?";
 
-  token.authorizedUser(req,id);
+  token.authorizedUser(req,null);
 
 	db.get(query, [id], function(error, post) {
 		if (error) {
