@@ -2,7 +2,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const initDB = require('./initDB');
-
+const token = require('./tokens');//import verify function
 router = express.Router();
 
 const db = initDB.db;
@@ -10,7 +10,7 @@ const db = initDB.db;
 
 router.use(bodyParser.json());
 
-//Add a group member
+//TODO: Add a group member ADMIN VALIDATION FOR ADDING PLS DO!
 router.post("/", function(req, res){
 	const body = req.body;
 	const groupId = body.groupId;
@@ -18,6 +18,7 @@ router.post("/", function(req, res){
 
 	const values = [groupId, accountId];
 	const query = "INSERT INTO groupMember(groupId,accountId) VALUES (?,?)";
+	token.authorizedUser(req,id);
 
 	//check if user is in the group already. if not add the group memeber.
 	db.get("SELECT * FROM GroupMember WHERE groupId = ? AND accountId = ?", values, function(error, groupMember){
@@ -48,7 +49,7 @@ router.get("/:groupId", function(req, res){
     Join Account ON Account.id = GroupMember.accountId
     WHERE GroupMember.groupId = ?;
   `;
-
+ 	token.authorizedUser(req,id);
 	const values = [groupId];
 
 	db.all(query, values, function(error, posts){
@@ -66,7 +67,7 @@ router.delete("/", function(req, res) {
 	const accountId = parseInt(req.query.accountId);
 	const query = "DELETE FROM groupMember WHERE groupId = ? AND accountId = ?";
 	const values = [groupId, accountId];
-
+	token.authorizedUser(req,id);
  	db.get('SELECT * FROM Account Where id = ?', [accountId], function(error, account) {
 		if(error){
 			res.status(500).end();

@@ -3,6 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const initDB = require('./initDB');
 const db = initDB.db;
+const token = require('./tokens');//import verify function
 
 router = express.Router();
 router.use(bodyParser.json());
@@ -18,6 +19,7 @@ router.post("/", function(req, res){
   const privateGroup = body.privateGroup;
 
   let errorCodes = [];
+  token.authorizedUser(req,id);
 
   if(groupName.length < 4){  // Validate it
     errorCodes.push("groupNameTooShort");
@@ -73,6 +75,8 @@ router.post("/", function(req, res){
 router.get("/",function(req, res){
  const query = "SELECT * FROM 'Group' WHERE privateGroup = 0";
 
+ token.authorizedUser(req,id);
+
  db.get(query, function(error, post){
    if(error){
      res.status(500).send(error);
@@ -91,6 +95,8 @@ router.get("/:id", function(req, res){
  const id = parseInt(req.params.groupId);
  const query = "SELECT * FROM 'Group' WHERE id = ?";
  const values = [id];
+
+ token.authorizedUser(req,id);
 
  db.get(query, values, function(error, post){
    if(error){
@@ -115,6 +121,8 @@ router.put("/:id", function(req, res){
   const privateGroup = body.privateGroup;
 
   let errorCodes = [];
+
+  token.authorizedUser(req,id);
 
   if(groupName.length < 4){  // Validate it
     errorCodes.push("groupNameTooShort");
@@ -147,6 +155,8 @@ router.put("/:id", function(req, res){
 router.delete("/:id",function(req, res){
   const id = parseInt(req.params.id);
   const values = [id];
+  
+  token.authorizedUser(req,id);
 
   db.get("SELECT * FROM 'Group' WHERE id = ?",values,function(error,group){
     if(error){
