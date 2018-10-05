@@ -51,7 +51,6 @@ router.post("/", function(req, res){
 
 
 function authorizedUser(req,accountId){
-  console.log("inne i funktionen");
   const authorizationHeader = req.get("authorization");
   const accessToken = authorizationHeader.substr(7);//used to remove "Bearer" in the beginning of accessToken
 
@@ -71,5 +70,10 @@ function authorizedUser(req,accountId){
   }
 }
 
+function authorizedAdmin(){
+  //TODO admin validation
+}
+
 module.exports = router;
 module.exports.authorizedUser = authorizedUser;
+module.exports.authorizedUser = authorizedAdmin;
