@@ -73,7 +73,13 @@ router.post("/", function(req, res){
 
 //Retrieve all Groups
 router.get("/",function(req, res){
- const query = "SELECT * FROM 'Group' WHERE privateGroup = 0";
+  const query = `
+    SELECT 'Group'.id, 'Group'.adminId, 'Group'.groupName, 'Group'.platformName,
+    'Group'.platformFee, 'Group'.paymentDate, Count(GroupMember.accountId) AS memberCount
+    FROM 'GroupMember'
+    Join 'Group' ON 'Group'.id = GroupMember.groupId
+    WHERE 'Group'.privateGroup = 0;
+  `;
 
  //token.authorizedUser(req,id);
 
@@ -108,7 +114,6 @@ router.get("/:id", function(req, res){
 
  db.get(query, values, function(error, post){
    if(error){
-     console.log("test");
      res.status(500).send(error);
    }else{
      if(post){
