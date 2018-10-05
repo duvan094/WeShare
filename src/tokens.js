@@ -36,7 +36,7 @@ router.post("/", function(req, res){
         // Create a new token that can be sent to client
         const accessToken = jwt.sign({accountId: account.id}, serverSecret);
         const idToken = jwt.sign({sub:account.id, preferred_username:account.username}, serverSecret);
-        
+
         res.status(200).json({
           access_token: accessToken,
           token_type: "Bearer",
@@ -49,4 +49,27 @@ router.post("/", function(req, res){
   });
 });
 
+
+function authorizedUser(req,accountId){
+  console.log("inne i funktionen");
+  const authorizationHeader = req.get("authorization");
+  const accessToken = authorizationHeader.substr(7);//used to remove "Bearer" in the beginning of accessToken
+
+  let tokenAccountId = null;
+
+  try{//Check if user is authorized
+    const payload = jwt.verify(accessToken,serverSecret);
+    tokenAccountId = payload.accountId;
+  }catch(error){//if the payload fails it means it is tempered with
+    response.status(401).end();//Unathorized
+    return;
+  }
+
+  if(tokenAccountId != accountId){//Check so accountId from matches the one saved in the token
+    response.status(401).end();
+    return;
+  }
+}
+
 module.exports = router;
+module.exports.authorizedUser = authorizedUser;
