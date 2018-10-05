@@ -80,20 +80,21 @@ router.get("/",function(req, res){
     Join 'Group' ON 'Group'.id = GroupMember.groupId
     WHERE 'Group'.privateGroup = 0;
   `;
+  
   //See if user is logged in
- //token.authorizedUser(req,id);
+  token.authorizedUser(req);
 
- db.get(query, function(error, post){
-   if(error){
-     res.status(500).send(error);
-   }else{
-     if(post){
-       res.status(200).send(post);
-     }else{
-       res.status(404).end();
-     }
-   }
- });
+  db.get(query, function(error, post){
+    if(error){
+      res.status(500).send(error);
+    }else{
+      if(post){
+        res.status(200).send(post);
+      }else{
+        res.status(404).end();
+      }
+    }
+  });
 });
 
 //Retrieve single Group
@@ -108,9 +109,9 @@ router.get("/:id", function(req, res){
     WHERE 'GroupMember'.groupId = ?;
   `;
 
- const values = [id];
-//Check if user is logged in
-// token.authorizedUser(req,id);
+  const values = [id];
+  //Check if user is logged in
+  token.authorizedUser(req);
 
  db.get(query, values, function(error, post){
    if(error){
