@@ -83,9 +83,10 @@ router.get("/",function(req, res){
   const query = `
     SELECT 'Group'.id, 'Group'.adminId, 'Group'.groupName, 'Group'.platformName,
     'Group'.platformFee, 'Group'.paymentDate, Count(GroupMember.accountId) AS memberCount
-    FROM 'GroupMember'
-    Join 'Group' ON 'Group'.id = GroupMember.groupId
-    WHERE 'Group'.privateGroup = 0;
+    FROM 'Group'
+    Join GroupMember ON 'Group'.id = GroupMember.groupId
+    WHERE 'Group'.privateGroup = 0
+    GROUP BY 'Group'.id, GroupMember.groupId
   `;
 
   //See if user is logged in
@@ -94,12 +95,12 @@ router.get("/",function(req, res){
     return;
   }
 
-  db.get(query, function(error, post){
+  db.all(query, function(error, posts){
     if(error){
       res.status(500).send(error);
     }else{
-      if(post){
-        res.status(200).send(post);
+      if(posts){
+        res.status(200).send(posts);
       }else{
         res.status(404).end();
       }
@@ -130,7 +131,7 @@ router.get("/:id", function(req, res){
    if(error){
      res.status(500).send(error);
    }else{
-     if(post){
+     if(post.id !== null){
        res.status(200).send(post);
      }else{
       res.status(404).end();

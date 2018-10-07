@@ -10,7 +10,6 @@ const db = initDB.db;
 
 router.use(bodyParser.json());
 
-//TODO: Add a group member ADMIN VALIDATION FOR ADDING PLS DO!
 router.post("/", function(req, res){
 	const body = req.body;
 	const groupId = body.groupId;
@@ -20,12 +19,16 @@ router.post("/", function(req, res){
 	const query = "INSERT INTO groupMember(groupId,accountId) VALUES (?,?)";
 
 	//Check if the user trying to insert new group member is an admin
-	db.get("SELECT adminId FROM 'Group' WHERE groupId = ?", [groupId], function(error, groupAdmin){
+	db.get("SELECT adminId FROM 'Group' WHERE id = ?", [groupId], function(error, groupAdmin){
 		if(error){
-			res.status(500).send(error).end();
+			res.status(500).send(error.message).end();
 		}else{
 
-			token.authorizedUser(req,groupAdmin.adminId);
+		    //Check if user is admin of group and allowed to make changes
+			if(!token.authorizedUser(req,groupAdmin.adminId)){
+				res.status(401).end();
+				return;
+			}
 
 			db.run(query, values, function(error){
 				if(error){
