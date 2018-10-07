@@ -34,7 +34,7 @@ router.post("/", function(req, res){
   }
 
   if(!validateEmail(email)){
-    errorCodes.push("invalidLettersInEmail");
+    errorCodes.push("invalidEmail");
   }
 
   if(errorCodes.length > 0){
@@ -77,7 +77,7 @@ router.post("/", function(req, res){
 //get id
 router.get("/:id", function(req, res) {
 	const id = parseInt(req.params.id);
-	const query = "SELECT * FROM Account WHERE id= ?";
+	const query = "SELECT id, username, email FROM Account WHERE id= ?";
 
   token.authorizedUser(req);
 
@@ -113,7 +113,7 @@ router.put("/:id", function(req, res){
         let errorCodes = [];
 
         if(!validateEmail(email)){
-          errorCodes.push("invalidLettersInEmail");
+          errorCodes.push("invalidEmail");
         }
 
         if(errorCodes.length > 0){

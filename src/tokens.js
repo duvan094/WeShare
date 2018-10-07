@@ -51,7 +51,14 @@ router.post("/", function(req, res){
 
 function authorizedUser(req,accountId = null){
   const authorizationHeader = req.get("authorization");
+
+  if(authorizationHeader === undefined){
+    return false;
+  }
+
   const accessToken = authorizationHeader.substr(7);//used to remove "Bearer" in the beginning of accessToken
+
+
 
   let tokenAccountId = null;
 
