@@ -9,6 +9,7 @@ const db = initDB.db;
 
 
 router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({extended: false}));
 
 router.post("/", function(req, res){
 	const body = req.body;
@@ -60,7 +61,7 @@ router.get("/:groupId", function(req, res){
 	const tokenAccountId = token.authorizedUser(req);
 
 	if(!tokenAccountId){//Check if authorization failed
-    res.status(401).end();
+	res.status(401).end();
     return;
   }
 
@@ -72,27 +73,28 @@ router.get("/:groupId", function(req, res){
 		}else{
 			//Check if one of the accountId's in the match the tokenAccountId
 			for(let i = 0; i < groupMembers.length; i++){
-				if(groupMembers[i].accountId == tokenAccountId){
-					res.status(200).send(groupMembers);
+				if(groupMembers[i].id == tokenAccountId){
+					res.status(200).send(groupMembers).end();
+					return;
 				}
 			}
-			res.status(401).send("Unathorized");
+			res.status(401).send("Unathorized").end();
 		}
 	});
 });
 
 //Delete a group-member
-router.delete("/", function(req, res) {
+router.delete("/?", function(req, res) {
 	const groupId = parseInt(req.query.groupId);
 	const accountId = parseInt(req.query.accountId);
 	const query = "DELETE FROM GroupMember WHERE groupId = ? AND accountId = ?";
 	const values = [groupId, accountId];
 
 	//Check if the user deleting is the group admin
-	db.get('SELECT adminId FROM Group Where id = ?', [groupId], function(error, adminAccount) {
+	db.get('SELECT * FROM "Group" Where id = ?', [groupId], function(error, group) {
 
 		//Check if user is admin of group and allowed to make changes
-		if(!token.authorizedUser(req,adminAccount.adminId)){
+		if(!token.authorizedUser(req,group.adminId)){
 			res.status(401).end();
 			return;
 		}
