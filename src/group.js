@@ -89,7 +89,10 @@ router.get("/",function(req, res){
   `;
 
   //See if user is logged in
-  token.authorizedUser(req);
+  if(!token.authorizedUser(req)){
+    res.status(401).end();
+    return;
+  }
 
   db.get(query, function(error, post){
     if(error){
@@ -118,7 +121,10 @@ router.get("/:id", function(req, res){
 
   const values = [id];
   //Check if user is logged in
-  token.authorizedUser(req);
+  if(!token.authorizedUser(req)){
+    res.status(401).end();
+    return;
+  }
 
  db.get(query, values, function(error, post){
    if(error){
@@ -150,7 +156,11 @@ router.put("/:id", function(req, res){
       return;
     }else{
       //Check if user is admin of group and allowed to make changes
-      token.authorizedUser(req,group.adminId);
+      if(!token.authorizedUser(req,group.adminId)){
+        res.status(401).end();
+        return;
+      }
+
 
       let errorCodes = [];
 
@@ -196,7 +206,10 @@ router.delete("/:id",function(req, res){
       return;
     }else{
       //Check if user is admin of group and allowed to make changes
-      token.authorizedUser(req,group.adminId);
+      if(!token.authorizedUser(req,group.adminId)){
+        res.status(401).end();
+        return;
+      }
 
       const query = "DELETE FROM 'Group' WHERE id = ?";
       db.run(query,values,function(error){
