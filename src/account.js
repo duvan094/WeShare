@@ -79,7 +79,12 @@ router.get("/:id", function(req, res) {
 	const id = parseInt(req.params.id);
 	const query = "SELECT id, username, email FROM Account WHERE id= ?";
 
-  token.authorizedUser(req);
+  //Check if authorized user
+  if(!token.authorizedUser(req)){
+    res.status(401).end();
+    return;
+  }
+
 
 	db.get(query, [id], function(error, post) {
 		if (error) {
@@ -99,7 +104,13 @@ router.put("/:id", function(req, res){
   const oldPassword = req.body.oldPassword;
   const email = req.body.email;
 
-  token.authorizedUser(req,id);
+  //Check if authorized user
+  if(!token.authorizedUser(req,id)){
+    res.status(401).end();
+    return;
+  }
+
+
 
   db.get('Select * FROM Account WHERE id = ?',[id],function(error,account){
     if(error){
@@ -147,7 +158,12 @@ router.delete("/:id", function(req, res){
   const query = "DELETE FROM Account WHERE id = ?";
   const values = [id];
 
-  token.authorizedUser(req,id);
+  //Check if user is authorized
+  if(!token.authorizedUser(req,id)){
+    res.status(401).end();
+    return;
+  }
+
 
   db.get("SELECT * FROM Account WHERE id = ?",values,function(error,account){
     if(error){
