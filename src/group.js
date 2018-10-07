@@ -11,7 +11,6 @@ router.use(bodyParser.json());
 //Create new group
 router.post("/", function(req, res){
   const body = req.body;
-  //const adminId = body.adminId;
   const groupName = body.groupName;
   const platformName = body.platformName;
   const platformUsername = body.platformUsername;
@@ -22,13 +21,12 @@ router.post("/", function(req, res){
 
   //Get the accountId from the logged in user
   const adminId = token.authorizedUser(req);
-  console.log(adminId);
-/*
-  if(!token.authorizedUser(req,adminId)){
-    res.status(401).end();//Unathorized
+
+  if(adminId == false){
+    res.status(401).end();
     return;
   }
-  */
+
   if(groupName.length < 4){  // Validate it
     errorCodes.push("groupNameTooShort");
   }else if(groupName.length > 20){
@@ -54,7 +52,7 @@ router.post("/", function(req, res){
   db.run(query,values,function(error){
     if(error){
       //If the groupName fails because it's not unique
-      if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: 'Group'.groupName"){
+      if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: Group.groupName"){
         res.status(400).json(["groupNameNotUnique"]);
       }else{
         res.status(500).send(error).end();
