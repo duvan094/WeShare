@@ -11,7 +11,7 @@ router.use(bodyParser.json());
 //Create new group
 router.post("/", function(req, res){
   const body = req.body;
-  const adminId = body.adminId;
+  //const adminId = body.adminId;
   const groupName = body.groupName;
   const platformName = body.platformName;
   const platformUsername = body.platformUsername;
@@ -20,11 +20,15 @@ router.post("/", function(req, res){
 
   let errorCodes = [];
 
+  //Get the accountId from the logged in user
+  const adminId = token.authorizedUser(req);
+  console.log(adminId);
+/*
   if(!token.authorizedUser(req,adminId)){
     res.status(401).end();//Unathorized
     return;
   }
-  
+  */
   if(groupName.length < 4){  // Validate it
     errorCodes.push("groupNameTooShort");
   }else if(groupName.length > 20){
