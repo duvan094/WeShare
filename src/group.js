@@ -67,7 +67,6 @@ router.post("/", function(req, res){
         if(error){
           res.status(500).end();
         }else{
-          console.log("headerHej");
           res.setHeader("location","/groups/"+lastID);
           res.status(201).end();
         }
@@ -99,7 +98,7 @@ router.get("/",function(req, res){
     if(error){
       res.status(500).send(error);
     }else{
-      if(posts){
+      if(posts.length !== 0){
         res.status(200).send(posts);
       }else{
         res.status(404).end();
@@ -114,7 +113,8 @@ router.get("/:id", function(req, res){
 
   const query = `
     SELECT 'Group'.id, 'Group'.adminId, 'Group'.groupName, 'Group'.platformName,
-    'Group'.platformFee, 'Group'.paymentDate, Count(GroupMember.accountId) AS memberCount
+    'Group'.platformFee, 'Group'.paymentDate, Count(GroupMember.accountId) AS memberCount,
+    'Group'.privateGroup
     FROM 'GroupMember'
     Join 'Group' ON 'Group'.id = GroupMember.groupId
     WHERE 'GroupMember'.groupId = ?;
