@@ -59,6 +59,11 @@ router.get("/:groupId", function(req, res){
 	//Save the tokenAccountId
 	const tokenAccountId = token.authorizedUser(req);
 
+	if(!tokenAccountId){//Check if authorization failed
+    res.status(401).end();
+    return;
+  }
+
 	const values = [groupId];
 
 	db.all(query, values, function(error, groupMembers){
@@ -86,7 +91,11 @@ router.delete("/", function(req, res) {
 	//Check if the user deleting is the group admin
 	db.get('SELECT adminId FROM Group Where id = ?', [groupId], function(error, adminAccount) {
 
-		token.authorizedUser(req,adminAccount.adminId);
+		//Check if user is admin of group and allowed to make changes
+		if(!token.authorizedUser(req,adminAccount.adminId)){
+			res.status(401).end();
+			return;
+		}
 
 		//Check if GroupMember exists
 		db.get('SELECT * FROM GroupMember Where groupId = ? AND accountId = ?', values, function(error, account) {
