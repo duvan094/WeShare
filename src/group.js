@@ -79,6 +79,7 @@ router.post("/", function(req, res){
 
 //Retrieve all Groups
 router.get("/",function(req, res){
+  console.log("all groups");
   const query = `
     SELECT 'Group'.id, 'Group'.adminId, 'Group'.groupName, 'Group'.platformName,
     'Group'.platformFee, 'Group'.paymentDate, Count(GroupMember.accountId) AS memberCount
@@ -108,8 +109,8 @@ router.get("/",function(req, res){
 });
 
 //Retrieve single Group
-router.get("/:id", function(req, res){
-  const id = parseInt(req.params.id);
+router.get("/:groupName", function(req, res){
+  const groupName = req.params.groupName;
 
   const query = `
     SELECT 'Group'.id, 'Group'.adminId, 'Group'.groupName, 'Group'.platformName,
@@ -117,10 +118,10 @@ router.get("/:id", function(req, res){
     'Group'.privateGroup
     FROM 'GroupMember'
     Join 'Group' ON 'Group'.id = GroupMember.groupId
-    WHERE 'GroupMember'.groupId = ?;
+    WHERE 'Group'.groupName = ?;
   `;
 
-  const values = [id];
+  const values = [groupName];
   //Check if user is logged in
   if(!token.authorizedUser(req)){
     res.status(401).end();
@@ -129,7 +130,7 @@ router.get("/:id", function(req, res){
 
  db.get(query, values, function(error, post){
    if(error){
-     res.status(500).send(error);
+     res.status(500).send(error.message);
    }else{
      if(post.id !== null){
        res.status(200).send(post);
