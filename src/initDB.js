@@ -24,6 +24,7 @@ db.run(`
     platformFee INT NOT NULL,
     privateGroup BOOLEAN,
     FOREIGN KEY(adminId) REFERENCES Account(id)
+    ON DELETE CASCADE
   )
 `);
 

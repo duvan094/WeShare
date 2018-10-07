@@ -79,7 +79,6 @@ router.post("/", function(req, res){
 
 //Retrieve all Groups
 router.get("/",function(req, res){
-  console.log("all groups");
   const query = `
     SELECT 'Group'.id, 'Group'.adminId, 'Group'.groupName, 'Group'.platformName,
     'Group'.platformFee, 'Group'.paymentDate, Count(GroupMember.accountId) AS memberCount
