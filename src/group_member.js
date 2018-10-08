@@ -34,7 +34,7 @@ router.post("/", function(req, res){
 			db.run(query, values, function(error){
 				if(error){
 					if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: GroupMember.groupId, GroupMember.accountId"){
-						res.status(409).send("userAlreadyExists").end();//Send error codes
+						res.status(400).send("userAlreadyExists").end();//Send error codes
 						return;
 					}else{
 						res.status(500).send(error).end();

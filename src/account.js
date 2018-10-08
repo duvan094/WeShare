@@ -92,7 +92,7 @@ router.get("/:username", function(req, res) {
 		if (error) {
 			res.status(500).json(["Internal Error"]).end();
 		}else if(!post){
-      res.status(400).json(["accountNotFound"]).end();
+      res.status(404).json(["accountNotFound"]).end();
     } else {
 			res.status(200).send(post).end();
 		}
@@ -118,7 +118,7 @@ router.put("/:id", function(req, res){
     if(error){
       res.status(500).end();
     }else if(!account){//no account found
-      res.status(400).json(["accountNotFound"]);
+      res.status(404).json(["accountNotFound"]);
     }else{
       //Check the old password compares to the hashed password in the database
       if(bcrypt.compareSync(oldPassword, account.hashedPassword)){
