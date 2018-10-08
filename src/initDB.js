@@ -6,7 +6,7 @@ db.run("PRAGMA foreign_keys = ON");
 
 db.run(`
   CREATE TABLE IF NOT EXISTS Account (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id TEXT PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
     hashedPassword TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE

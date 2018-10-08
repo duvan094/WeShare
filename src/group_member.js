@@ -86,7 +86,7 @@ router.get("/:groupId", function(req, res){
 //Delete a group-member
 router.delete("/?", function(req, res) {
 	const groupId = parseInt(req.query.groupId);
-	const accountId = parseInt(req.query.accountId);
+	const accountId = req.query.accountId;
 	const query = "DELETE FROM GroupMember WHERE groupId = ? AND accountId = ?";
 	const values = [groupId, accountId];
 

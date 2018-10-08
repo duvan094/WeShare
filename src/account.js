@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const initDB = require('./initDB');
 const vars = require('./variables');
 const token = require('./tokens');//import verify function
+const uuidv1 = require('uuid/v1');//Used to generate unique universial id
 
 router = express.Router();
 
@@ -15,6 +16,7 @@ router.use(bodyParser.json());
 
 //Create new account
 router.post("/", function(req, res){
+  const id = uuidv1();//Generate unique id
   const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
@@ -45,8 +47,8 @@ router.post("/", function(req, res){
   //Hash the password before inserting to database
   const hashedPassword = bcrypt.hashSync(password, saltRounds)
 
-  const query = "INSERT INTO Account (username,hashedPassword,email) VALUES (?,?,?)";
-  const values = [username,hashedPassword,email];
+  const query = `INSERT INTO Account (id,username,hashedPassword,email) VALUES (?,?,?,?)`;
+  const values = [id,username,hashedPassword,email];
 
   db.run(query,values,function(error){
     if(error){
@@ -76,7 +78,7 @@ router.post("/", function(req, res){
 //Retrieve single account
 //get id
 router.get("/:id", function(req, res) {
-	const id = parseInt(req.params.id);
+	const id = req.params.id;
 	const query = "SELECT id, username, email FROM Account WHERE id= ?";
 
   //Check if authorized user
@@ -99,7 +101,7 @@ router.get("/:id", function(req, res) {
 
 //PUT Update account
 router.put("/:id", function(req, res){
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
   const newPassword = req.body.newPassword;
   const oldPassword = req.body.oldPassword;
   const email = req.body.email;
@@ -153,7 +155,7 @@ router.put("/:id", function(req, res){
 
 //Delete account
 router.delete("/:id", function(req, res){
-  const id = parseInt(req.params.id);
+  const id = req.params.id;
 
   const query = "DELETE FROM Account WHERE id = ?";
   const values = [id];
