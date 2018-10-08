@@ -16,7 +16,7 @@ db.run(`
 db.run(`
   CREATE TABLE IF NOT EXISTS 'Group' (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    adminId INTEGER NOT NULL,
+    adminId TEXT NOT NULL,
     groupName TEXT NOT NULL UNIQUE,
     platformName TEXT NOT NULL,
     paymentDate DATE DEFAULT (DATE('now', '+1 month')),
@@ -32,7 +32,7 @@ db.run(`
 db.run(`
   CREATE TABLE IF NOT EXISTS GroupMember (
     groupId INTEGER NOT NULL,
-    accountId INTEGER NOT NULL,
+    accountId TEXT NOT NULL,
     PRIMARY KEY (groupId, accountId),
     FOREIGN KEY(accountId) REFERENCES Account(id)
     ON DELETE CASCADE,
