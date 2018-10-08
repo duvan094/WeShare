@@ -76,10 +76,10 @@ router.post("/", function(req, res){
 });
 
 //Retrieve single account
-//get id
-router.get("/:id", function(req, res) {
-	const id = req.params.id;
-	const query = "SELECT id, username, email FROM Account WHERE id= ?";
+router.get("/:username", function(req, res) {
+  const username = req.params.username;
+
+	const query = "SELECT id, username, email FROM Account WHERE username = ?";
 
   //Check if authorized user
   if(!token.authorizedUser(req)){
@@ -88,7 +88,7 @@ router.get("/:id", function(req, res) {
   }
 
 
-	db.get(query, [id], function(error, post) {
+	db.get(query, [username], function(error, post) {
 		if (error) {
 			res.status(500).json(["Internal Error"]).end();
 		}else if(!post){
