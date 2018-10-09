@@ -30,14 +30,15 @@ code=4/cwAMTfldtfrVDX4frLbEVucrJK8bdaDPx7ZyghywVwJ9mtJWtIKZrtLayPFEV_aYBAWOan763
 */
 router.post("/", function(req, res){
   const code = req.query.code;
-
   const codeUrl = "code=" + code + "&client_id=" + googleAuth.client_id + "&client_secret=" + googleAuth.client_secret + "&redirect_uri=" + googleAuth.redirect_uris[0] + "&grant_type=authorization_code";
 
+  // TODO: Send post request to "https://www.googleapis.com/oauth2/v4/token"
+  //With the codeUrl
+  //e.g. code=4/cwAMTfldtfrVDX4frLbEVucrJK8bdaDPx7ZyghywVwJ9mtJWtIKZrtLayPFEV_aYBAWOan7634tC61TUuZ8uYsU&client_id=998656939869-kf3lus12g8qp63fvtpdj3j45sji8e30l.apps.googleusercontent.com&client_secret=F1vtqUZD2b5n5-zRwJNpGoXd&redirect_uri=https://jacobduvander.se/got-response-from-google&grant_type=authorization_code
+  //Retrive sub from the tokenId that is received
+  //Send back the sub to verify that it's a valid google user.
+
   res.send(codeUrl).status(200).end();
-  /*
-  https://www.googleapis.com/oauth2/v4/token
-  code=4/cwAMTfldtfrVDX4frLbEVucrJK8bdaDPx7ZyghywVwJ9mtJWtIKZrtLayPFEV_aYBAWOan7634tC61TUuZ8uYsU&client_id=998656939869-kf3lus12g8qp63fvtpdj3j45sji8e30l.apps.googleusercontent.com&client_secret=F1vtqUZD2b5n5-zRwJNpGoXd&redirect_uri=https://jacobduvander.se/got-response-from-google&grant_type=authorization_code
-  */
 
 });
 
