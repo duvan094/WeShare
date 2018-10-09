@@ -43,7 +43,7 @@ router.post("/", function(req, res){
           id_token: idToken
         });
       }else{
-        res.status(400).json({error: "invalid_client"});
+        res.status(401).json(["Unathorized"]);
       }
     }
   });
