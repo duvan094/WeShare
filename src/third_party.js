@@ -10,10 +10,6 @@ router = express.Router();
 
 const db = initDB.db;
 
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({extended: false}));
-
-
 const googleAuth =  {
   "client_id":"998656939869-kf3lus12g8qp63fvtpdj3j45sji8e30l.apps.googleusercontent.com",
   "project_id":"weshare-218810",
@@ -24,7 +20,14 @@ const googleAuth =  {
   "redirect_uris":["https://jacobduvander.se/got-response-from-google"]
 };
 
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({extended: false}));
 
+/*
+To do a post request:
+localhost:3000/got-response-from-google?
+code=4/cwAMTfldtfrVDX4frLbEVucrJK8bdaDPx7ZyghywVwJ9mtJWtIKZrtLayPFEV_aYBAWOan7634tC61TUuZ8uYsU&scope=https://www.googleapis.com/auth/plus.me&authuser=0&session_state=db06ded595fc75283578545b61f6598d78dff7a4..824d&prompt=consent
+*/
 router.post("/", function(req, res){
   const code = req.query.code;
 
