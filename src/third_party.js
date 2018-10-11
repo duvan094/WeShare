@@ -6,9 +6,7 @@ const vars = require('./variables');
 const request = require('request'); //Used to do a request to google 
 const uuidv1 = require('uuid/v1');//Used to generate unique universial id
 
-
 const initDB = require('./initDB');
-
 
 const serverSecret = vars.serverSecret;
 
@@ -46,20 +44,6 @@ router.post("/", function(req, res){
     redirect_uri: googleAuth.redirect_uris[0],
     grant_type: "authorization_code"
  };
-
-
-
-
-  //const codeUrl = "code=" + code + "&client_id=" + googleAuth.client_id + "&client_secret=" + googleAuth.client_secret + "&redirect_uri=" + googleAuth.redirect_uris[0] + "&grant_type=authorization_code";
-
-  // TODO: Send post request to "https://www.googleapis.com/oauth2/v4/token"
-  //With the codeUrl
-  //e.g. code=4/cwAMTfldtfrVDX4frLbEVucrJK8bdaDPx7ZyghywVwJ9mtJWtIKZrtLayPFEV_aYBAWOan7634tC61TUuZ8uYsU&client_id=998656939869-kf3lus12g8qp63fvtpdj3j45sji8e30l.apps.googleusercontent.com&client_secret=F1vtqUZD2b5n5-zRwJNpGoXd&redirect_uri=https://jacobduvander.se/got-response-from-google&grant_type=authorization_code
-  //Retrive sub from the tokenId that is received
-  //Send back the sub to verify that it's a valid google user.
-  //if(code !== ""){
-
-  //console.log(formData);
 
  request.post(
   {
@@ -115,10 +99,7 @@ router.post("/", function(req, res){
   });
 
     res.send(tokenSub).status(200).end();
-  }
-);
+  });
 
-
-});
 
 module.exports = router;
