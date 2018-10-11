@@ -8,8 +8,9 @@ db.run(`
   CREATE TABLE IF NOT EXISTS Account (
     id TEXT PRIMARY KEY,
     username TEXT UNIQUE NOT NULL,
-    hashedPassword TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE
+    hashedPassword TEXT,
+    email TEXT NOT NULL UNIQUE,
+    googleSub TEXT UNIQUE
   )
 `);
 

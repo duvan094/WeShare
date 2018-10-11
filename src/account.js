@@ -30,6 +30,10 @@ router.post("/", function(req, res){
     errorCodes.push("usernameTooLong");
   }
 
+  if(password.length < 6){  // Validate it
+    errorCodes.push("passwordTooShort");
+  }
+
   //validating for invalidCharacters
   if(!/^[a-zA-Z1-9]+$/.test(username)){
     errorCodes.push("usernameInvalidCharacters");

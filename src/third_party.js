@@ -68,13 +68,10 @@ router.post("/", function(req, res){
     console.log(body);
     const id_token = JSON.parse(body).id_token;
     console.log("id_token: " + id_token);
-    try{//Check if user is authorized
-      const payload = jwt.verify(id_token,serverSecret);
-      tokenSub = payload.sub;
-    }catch(error){//if the payload fails it means it is tempered with
-      res.status(401).end();
-      return;
-    }
+    console.log(JSON.parse(body).access_token);
+
+    const payload = jwt.decode(id_token);
+    tokenSub = payload.sub;
 
     console.log(tokenSub);
 
