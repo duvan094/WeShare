@@ -31,6 +31,7 @@ code=4/cwAMTfldtfrVDX4frLbEVucrJK8bdaDPx7ZyghywVwJ9mtJWtIKZrtLayPFEV_aYBAWOan763
 */
 router.post("/", function(req, res){
   const code = req.query.code;
+
   const formData = {
     client_id:     googleAuth.client_id,
     client_secret: googleAuth.client_secret,
@@ -41,7 +42,8 @@ router.post("/", function(req, res){
 
 
 
-  const codeUrl = "code=" + code + "&client_id=" + googleAuth.client_id + "&client_secret=" + googleAuth.client_secret + "&redirect_uri=" + googleAuth.redirect_uris[0] + "&grant_type=authorization_code";
+
+  //const codeUrl = "code=" + code + "&client_id=" + googleAuth.client_id + "&client_secret=" + googleAuth.client_secret + "&redirect_uri=" + googleAuth.redirect_uris[0] + "&grant_type=authorization_code";
 
   // TODO: Send post request to "https://www.googleapis.com/oauth2/v4/token"
   //With the codeUrl
@@ -49,10 +51,8 @@ router.post("/", function(req, res){
   //Retrive sub from the tokenId that is received
   //Send back the sub to verify that it's a valid google user.
   //if(code !== ""){
-//    xHttpReq.open("POST", "https://www.googleapis.com/oauth2/v4/token", true);
- //   xHttpReq.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
- console.log(formData);
+  //console.log(formData);
 
  request.post(
   {
@@ -60,7 +60,7 @@ router.post("/", function(req, res){
     form: formData
   },
   function (err, httpResponse, body) {
-    console.log(err, body);
+    console.log(body);
     res.status(400).end();
   }
 );
