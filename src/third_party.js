@@ -34,9 +34,7 @@ code=4/cwAMTfldtfrVDX4frLbEVucrJK8bdaDPx7ZyghywVwJ9mtJWtIKZrtLayPFEV_aYBAWOan763
 */
 router.post("/", function(req, res){
   const code = req.body.code;
-  console.log(code);
-
-
+ 
   const formData = {
     client_id:     googleAuth.client_id,
     client_secret: googleAuth.client_secret,
@@ -56,7 +54,7 @@ router.post("/", function(req, res){
 
     const tokenSub = payload.sub;
     const email = payload.email;
-
+    console.log(email);
     //Check if user has logged in with google before
     db.get("SELECT * FROM Account WHERE googleSub = ?",[tokenSub],function(error,account){
       if(error){
@@ -68,6 +66,7 @@ router.post("/", function(req, res){
         const values = [id,email,email,tokenSub];
         db.run(query,values,function(error){//Create new account
           if(error){
+            console.log(error.message);
             res.status(500).end();
           }else{//When the account has been successfully created, send back accessToken so that the user can be logged in
             const accessToken = jwt.sign({accountId: this.lastID}, serverSecret);
@@ -97,8 +96,6 @@ router.post("/", function(req, res){
       return;
     });
   });
-
-    res.send(tokenSub).status(200).end();
   });
 
 
