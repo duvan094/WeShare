@@ -3,7 +3,9 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const vars = require('./variables');
-const request = require('request');
+const request = require('request'); //Used to do a request to google 
+const uuidv1 = require('uuid/v1');//Used to generate unique universial id
+
 
 const initDB = require('./initDB');
 
@@ -65,15 +67,52 @@ router.post("/", function(req, res){
     form: formData
   },
   function (err, httpResponse, body) {
-    console.log(body);
     const id_token = JSON.parse(body).id_token;
-    console.log("id_token: " + id_token);
-    console.log(JSON.parse(body).access_token);
-
     const payload = jwt.decode(id_token);
-    tokenSub = payload.sub;
 
-    console.log(tokenSub);
+    const tokenSub = payload.sub;
+    const email = payload.email;
+
+    //Check if user has logged in with google before
+    db.get("SELECT * FROM Account WHERE googleSub = ?",[tokenSub],function(error,account){
+      if(error){
+        res.status(500).send(error).end();
+        return;
+      }else if(!account){//no account found
+        const id = uuidv1();//Generate unique id
+        const query = "INSERT INTO Account (id,username,email,googleSub) VALUES (?,?,?,?)";
+        const values = [id,email,email,tokenSub];
+        db.run(query,values,function(error){//Create new account
+          if(error){
+            res.status(500).end();
+          }else{//When the account has been successfully created, send back accessToken so that the user can be logged in
+            const accessToken = jwt.sign({accountId: this.lastID}, serverSecret);
+            const idToken = jwt.sign({sub:this.lastID, preferred_username:email}, serverSecret);
+    
+            res.status(201).json({
+              access_token: accessToken,
+              token_type: "Bearer",
+              id_token: idToken
+            });
+    
+          }
+        });
+      }else{//If the user has logged in with google before an accessToken is returned
+        // Create a new token that can be sent to client
+        const accessToken = jwt.sign({accountId: account.id}, serverSecret);
+        const idToken = jwt.sign({sub:account.id, preferred_username:account.username}, serverSecret);
+
+        res.status(200).json({
+          access_token: accessToken,
+          token_type: "Bearer",
+          id_token: idToken
+        });
+      }
+       
+      
+      return;
+    });
+  });
 
     res.send(tokenSub).status(200).end();
   }
