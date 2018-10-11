@@ -2,10 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-var request = require('request');
+const vars = require('./variables');
+const request = require('request');
 
 const initDB = require('./initDB');
-const vars = require('./variables');
+
+
+const serverSecret = vars.serverSecret;
 
 router = express.Router();
 
@@ -30,7 +33,9 @@ localhost:3000/got-response-from-google?
 code=4/cwAMTfldtfrVDX4frLbEVucrJK8bdaDPx7ZyghywVwJ9mtJWtIKZrtLayPFEV_aYBAWOan7634tC61TUuZ8uYsU&scope=https://www.googleapis.com/auth/plus.me&authuser=0&session_state=db06ded595fc75283578545b61f6598d78dff7a4..824d&prompt=consent
 */
 router.post("/", function(req, res){
-  const code = req.query.code;
+  const code = req.body.code;
+  console.log(code);
+
 
   const formData = {
     client_id:     googleAuth.client_id,
@@ -61,7 +66,19 @@ router.post("/", function(req, res){
   },
   function (err, httpResponse, body) {
     console.log(body);
-    res.status(400).end();
+    const id_token = JSON.parse(body).id_token;
+    console.log("id_token: " + id_token);
+    try{//Check if user is authorized
+      const payload = jwt.verify(id_token,serverSecret);
+      tokenSub = payload.sub;
+    }catch(error){//if the payload fails it means it is tempered with
+      res.status(401).end();
+      return;
+    }
+
+    console.log(tokenSub);
+
+    res.send(tokenSub).status(200).end();
   }
 );
 
