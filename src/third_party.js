@@ -1,19 +1,23 @@
+//require all npm packages and help files
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const request = require('request'); //Used to do a request to google
+const uuidv1 = require('uuid/v1');  //Used to generate unique universial id
 const vars = require('./variables');
-const request = require('request'); //Used to do a request to google 
-const uuidv1 = require('uuid/v1');//Used to generate unique universial id
-
 const initDB = require('./initDB');
 
 const serverSecret = vars.serverSecret;
-
-router = express.Router();
-
 const db = initDB.db;
 
+router = express.Router();  //Router is used to export the module, that will then be used in another file.js
+
+/*Use bodyparser to be able to read bodies written in JSON and XML format.*/
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({extended: false}));
+
+/*The google credentials*/
 const googleAuth =  {
   "client_id":"998656939869-kf3lus12g8qp63fvtpdj3j45sji8e30l.apps.googleusercontent.com",
   "project_id":"weshare-218810",
@@ -24,17 +28,17 @@ const googleAuth =  {
   "redirect_uris":["https://jacobduvander.se/got-response-from-google"]
 };
 
-router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({extended: false}));
-
 /*
+Google login link
+https://accounts.google.com/o/oauth2/v2/auth?client_id=998656939869-kf3lus12g8qp63fvtpdj3j45sji8e30l.apps.googleusercontent.com&redirect_uri=https://jacobduvander.se/got-response-from-google&response_type=code&scope=openid%20profile%20email
+
 To do a post request:
 localhost:3000/got-response-from-google?
 code=4/cwAMTfldtfrVDX4frLbEVucrJK8bdaDPx7ZyghywVwJ9mtJWtIKZrtLayPFEV_aYBAWOan7634tC61TUuZ8uYsU&scope=https://www.googleapis.com/auth/plus.me&authuser=0&session_state=db06ded595fc75283578545b61f6598d78dff7a4..824d&prompt=consent
 */
 router.post("/", function(req, res){
   const code = req.body.code;
- 
+
   const formData = {
     client_id:     googleAuth.client_id,
     client_secret: googleAuth.client_secret,
@@ -43,6 +47,7 @@ router.post("/", function(req, res){
     grant_type: "authorization_code"
  };
 
+ /*Do a post request to Google to get the email and sub*/
  request.post(
   {
     url: 'https://www.googleapis.com/oauth2/v4/token',
@@ -54,30 +59,32 @@ router.post("/", function(req, res){
 
     const tokenSub = payload.sub;
     const email = payload.email;
-    console.log(email);
+
     //Check if user has logged in with google before
     db.get("SELECT * FROM Account WHERE googleSub = ?",[tokenSub],function(error,account){
       if(error){
         res.status(500).send(error).end();
         return;
-      }else if(!account){//no account found
+      }else if(!account){//If no account matching the googleSub is found, one will be created.
         const id = uuidv1();//Generate unique id
+
         const query = "INSERT INTO Account (id,username,email,googleSub) VALUES (?,?,?,?)";
         const values = [id,email,email,tokenSub];
+
         db.run(query,values,function(error){//Create new account
           if(error){
-            console.log(error.message);
             res.status(500).end();
           }else{//When the account has been successfully created, send back accessToken so that the user can be logged in
             const accessToken = jwt.sign({accountId: this.lastID}, serverSecret);
             const idToken = jwt.sign({sub:this.lastID, preferred_username:email}, serverSecret);
-    
+
+            //Send back the tokens
             res.status(201).json({
               access_token: accessToken,
               token_type: "Bearer",
               id_token: idToken
             });
-    
+
           }
         });
       }else{//If the user has logged in with google before an accessToken is returned
@@ -91,12 +98,10 @@ router.post("/", function(req, res){
           id_token: idToken
         });
       }
-       
-      
       return;
     });
   });
-  });
+});
 
-
+//Export the module
 module.exports = router;
