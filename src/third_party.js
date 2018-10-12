@@ -33,7 +33,9 @@ Google login link
 https://accounts.google.com/o/oauth2/v2/auth?client_id=998656939869-kf3lus12g8qp63fvtpdj3j45sji8e30l.apps.googleusercontent.com&redirect_uri=https://jacobduvander.se/got-response-from-google&response_type=code&scope=openid%20profile%20email
 
 To do a post request:
-localhost:3000/got-response-from-google?
+localhost:3000/got-response-from-google
+
+Body:
 code=4/cwAMTfldtfrVDX4frLbEVucrJK8bdaDPx7ZyghywVwJ9mtJWtIKZrtLayPFEV_aYBAWOan7634tC61TUuZ8uYsU&scope=https://www.googleapis.com/auth/plus.me&authuser=0&session_state=db06ded595fc75283578545b61f6598d78dff7a4..824d&prompt=consent
 */
 router.post("/", function(req, res){
