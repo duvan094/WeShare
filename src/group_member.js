@@ -51,7 +51,7 @@ router.post("/", function(req, res){
 
 //View all group members
 router.get("/:groupId", function(req, res){
-	const groupId = parseInt(req.params.groupId);
+	const groupId = parseInt(req.params.groupId);//Retrieve the groupId from the url
 	const query = `
     SELECT Account.id, Account.username, Account.email
     FROM GroupMember
