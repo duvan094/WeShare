@@ -138,7 +138,7 @@ router.get("/:groupName", function(req, res){
      if(post.id !== null){
        res.status(200).send(post);
      }else{
-      res.status(404).end();
+      res.status(404).send("groupNotFound").end();
      }
    }
  });
