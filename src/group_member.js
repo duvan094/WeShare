@@ -24,6 +24,8 @@ router.post("/", function(req, res){
 	db.get("SELECT adminId FROM 'Group' WHERE id = ?", [groupId], function(error, groupAdmin){
 		if(error){
 			res.status(500).send(error.message).end();
+		}else if(!groupAdmin){//if no groupAdmin is found, the group does not exist
+			res.status(404).send("groupNotFound").end();
 		}else{
 
 		  //Check if user is admin of group and allowed to make changes
@@ -37,6 +39,9 @@ router.post("/", function(req, res){
 				if(error){
 					if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: GroupMember.groupId, GroupMember.accountId"){
 						res.status(400).send("userAlreadyExists").end();//Send error codes
+						return;
+					}else if(error.message == "SQLITE_CONSTRAINT: FOREIGN KEY constraint failed"){
+						res.status(404).send("userNotFound").end();//Send error codes
 						return;
 					}else{
 						res.status(500).send(error).end();
