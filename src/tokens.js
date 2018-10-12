@@ -8,8 +8,10 @@ const vars = require('./variables');
 
 const serverSecret = vars.serverSecret;
 const db = initDB.db;
+
 // Used to export the module, that will be then used in another file.js
-router = express.Router();
+const router = express.Router();
+
 // Use bodyparser to be able to read bodies written in JSON and XML format
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({extended: false}));
