@@ -16,7 +16,7 @@ const router = express.Router();
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({extended: false}));
 
-// Doing a POST request to create an account 
+// Doing a POST request to create an account
 router.post("/", function(req, res){
 
   const username = req.body.username;
@@ -45,14 +45,14 @@ router.post("/", function(req, res){
           id_token: idToken
         });
       }else{
-        //If password doesn't match the user is unauthorized 
+        //If password doesn't match the user is unauthorized
         res.status(401).json(["Unathorized"]);
       }
     }
   });
 });
 
-// A function to check if the user is authorized. 
+// A function to check if the user is authorized.
 function authorizedUser(req,accountId = null){
   const authorizationHeader = req.get("authorization");
 
@@ -71,7 +71,7 @@ function authorizedUser(req,accountId = null){
   }catch(error){//if the payload fails it means it is tempered with
     return false;
   }
-  
+
   if(accountId !== null){
     if(tokenAccountId !== accountId){//Check so accountId matches the one saved in the token
       return false;
@@ -84,6 +84,6 @@ function authorizedUser(req,accountId = null){
 
 }
 
-//Exports the modules 
+//Exports the modules
 module.exports = router;
 module.exports.authorizedUser = authorizedUser;
