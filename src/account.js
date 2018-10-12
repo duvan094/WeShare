@@ -22,7 +22,7 @@ router.post("/", function(req, res){
   const password = req.body.password;
   const email = req.body.email;
 
-  let errorCodes = [];  //Stor error codes
+  let errorCodes = [];  //Store error codes
 
   //Validate the received variables
   if(username.length < 4){
@@ -68,7 +68,7 @@ router.post("/", function(req, res){
         errorCodes.push("emailAlreadyExist");
       }
 
-      if(errorCodes.length > 0){
+      if(errorCodes.length > 0){//Check if there's any errors
         res.status(400).json(errorCodes).end();//Send error codes
         return;
       }else{
@@ -89,11 +89,11 @@ router.get("/:username", function(req, res) {
 
   //Check if authorized user
   if(!token.authorizedUser(req)){
-    res.status(401).end();
+    res.status(401).end();  //Unathorized
     return;
   }
 
-
+  //Run query
 	db.get(query, [username], function(error, post) {
 		if (error) {
 			res.status(500).json(["Internal Error"]).end();
@@ -107,6 +107,7 @@ router.get("/:username", function(req, res) {
 
 //PUT Update account
 router.put("/:id", function(req, res){
+  //Retrieve variables
   const id = req.params.id;
   const newPassword = req.body.newPassword;
   const oldPassword = req.body.oldPassword;
@@ -118,8 +119,7 @@ router.put("/:id", function(req, res){
     return;
   }
 
-
-
+  //Check if account exists
   db.get('Select * FROM Account WHERE id = ?',[id],function(error,account){
     if(error){
       res.status(500).end();
@@ -140,11 +140,13 @@ router.put("/:id", function(req, res){
           return;
         }
 
+        //Hash the new password
         const hashedPassword = bcrypt.hashSync(newPassword, saltRounds)
 
         const query = "UPDATE Account SET hashedPassword = ?, email = ? WHERE id = ?";
         const values = [hashedPassword,email,id];
 
+        //Run the query
         db.run(query,values,function(error){
           if(error){
             res.status(500).end();
@@ -152,7 +154,7 @@ router.put("/:id", function(req, res){
             res.status(200).end();
           }
         });
-      }else{
+      }else{//if the old password check didn't match, the user wasn't authorized to do changes
         res.status(401).end();
       }
     }
@@ -172,7 +174,7 @@ router.delete("/:id", function(req, res){
     return;
   }
 
-
+  //Check if user exists
   db.get("SELECT * FROM Account WHERE id = ?",values,function(error,account){
     if(error){
       res.status(500).send(error).end();
@@ -180,6 +182,7 @@ router.delete("/:id", function(req, res){
       res.status(404).send("accountNotFound").end();
       return;
     }else{
+      //If the user exists run the delete query
       db.run(query,values,function(error){
         if(error){
           res.status(500).end();

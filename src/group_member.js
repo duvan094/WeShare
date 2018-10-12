@@ -7,9 +7,10 @@ const router = express.Router();
 
 const db = initDB.db;
 
-
+// Use bodyparser to be able to read bodies written in JSON and XML format
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({extended: false}));
+
 
 router.post("/", function(req, res){
 	const body = req.body;
@@ -19,18 +20,19 @@ router.post("/", function(req, res){
 	const values = [groupId, accountId];
 	const query = "INSERT INTO groupMember(groupId,accountId) VALUES (?,?)";
 
-	//Check if the user trying to insert new group member is an admin
+	//Check if the user trying to insert new groupmember is an admin
 	db.get("SELECT adminId FROM 'Group' WHERE id = ?", [groupId], function(error, groupAdmin){
 		if(error){
 			res.status(500).send(error.message).end();
 		}else{
 
-		    //Check if user is admin of group and allowed to make changes
+		  //Check if user is admin of group and allowed to make changes
 			if(!token.authorizedUser(req,groupAdmin.adminId)){
 				res.status(401).end();
 				return;
 			}
 
+			//Insert groupmember into databse
 			db.run(query, values, function(error){
 				if(error){
 					if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: GroupMember.groupId, GroupMember.accountId"){
@@ -39,7 +41,7 @@ router.post("/", function(req, res){
 					}else{
 						res.status(500).send(error).end();
 					}
-				}else{
+				}else{//Groupmember was successfully added
 					res.status(201).end();
 				}
 			});
@@ -57,7 +59,7 @@ router.get("/:groupId", function(req, res){
     WHERE GroupMember.groupId = ?;
   `;
 
-	//Save the tokenAccountId
+	//Save the tokenAccountId for further verification
 	const tokenAccountId = token.authorizedUser(req);
 
 	if(!tokenAccountId){//Check if authorization failed
@@ -67,11 +69,15 @@ router.get("/:groupId", function(req, res){
 
 	const values = [groupId];
 
+	//Run the select query
 	db.all(query, values, function(error, groupMembers){
 		if (error){
 			res.status(500).send("Internal Error");
 		}else{
-			//Check if one of the accountId's in the match the tokenAccountId
+			/*
+				Check if one of the accountId's of the groupMembers match the tokenAccountId
+				to see if they are authorized to get information about the group.
+			*/
 			for(let i = 0; i < groupMembers.length; i++){
 				if(groupMembers[i].id == tokenAccountId){
 					res.status(200).send(groupMembers).end();
@@ -87,6 +93,7 @@ router.get("/:groupId", function(req, res){
 router.delete("/?", function(req, res) {
 	const groupId = parseInt(req.query.groupId);
 	const accountId = req.query.accountId;
+
 	const query = "DELETE FROM GroupMember WHERE groupId = ? AND accountId = ?";
 	const values = [groupId, accountId];
 
@@ -106,6 +113,7 @@ router.delete("/?", function(req, res) {
 			}else if(!account){
 				res.status(400).json(["accountNotFound"]);
 			}else{
+				//If the GroupMember exists, delete from group.
 				db.run(query, values, function(error){
 			    if(error){
 	      	  res.status(500).send("Internal error");
