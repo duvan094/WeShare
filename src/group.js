@@ -156,7 +156,7 @@ router.put("/:id", function(req, res){
   db.get("SELECT * FROM 'Group' WHERE id = ?",[id],function(error,group){
     if(error){
       res.status(500).send(error).end();
-    }else if(!group){//no account found
+    }else if(!group){//no group found
       res.status(400).send("groupNotFound").end();
       return;
     }else{
