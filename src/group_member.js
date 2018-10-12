@@ -11,7 +11,7 @@ const db = initDB.db;
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({extended: false}));
 
-
+//add groupmember
 router.post("/", function(req, res){
 	const body = req.body;
 	const groupId = body.groupId;
