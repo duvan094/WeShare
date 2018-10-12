@@ -83,7 +83,7 @@ router.post("/", function(req, res){
 
 //Retrieve single account
 router.get("/:username", function(req, res) {
-  const username = req.params.username;
+  const username = req.params.username; //Retrieve the username from the url
 
 	const query = "SELECT id, username, email FROM Account WHERE username = ?";
 
@@ -163,7 +163,7 @@ router.put("/:id", function(req, res){
 
 //Delete account
 router.delete("/:id", function(req, res){
-  const id = req.params.id;
+  const id = req.params.id; //Retrieve the id from the url
 
   const query = "DELETE FROM Account WHERE id = ?";
   const values = [id];
