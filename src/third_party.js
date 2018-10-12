@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const vars = require('./variables');
-const request = require('request'); //Used to do a request to google 
+const request = require('request'); //Used to do a request to google
 const uuidv1 = require('uuid/v1');//Used to generate unique universial id
 
 const initDB = require('./initDB');
@@ -28,13 +28,16 @@ router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({extended: false}));
 
 /*
+Google login link
+https://accounts.google.com/o/oauth2/v2/auth?client_id=998656939869-kf3lus12g8qp63fvtpdj3j45sji8e30l.apps.googleusercontent.com&redirect_uri=https://jacobduvander.se/got-response-from-google&response_type=code&scope=openid%20profile%20email
+
 To do a post request:
 localhost:3000/got-response-from-google?
 code=4/cwAMTfldtfrVDX4frLbEVucrJK8bdaDPx7ZyghywVwJ9mtJWtIKZrtLayPFEV_aYBAWOan7634tC61TUuZ8uYsU&scope=https://www.googleapis.com/auth/plus.me&authuser=0&session_state=db06ded595fc75283578545b61f6598d78dff7a4..824d&prompt=consent
 */
 router.post("/", function(req, res){
   const code = req.body.code;
- 
+
   const formData = {
     client_id:     googleAuth.client_id,
     client_secret: googleAuth.client_secret,
@@ -71,13 +74,13 @@ router.post("/", function(req, res){
           }else{//When the account has been successfully created, send back accessToken so that the user can be logged in
             const accessToken = jwt.sign({accountId: this.lastID}, serverSecret);
             const idToken = jwt.sign({sub:this.lastID, preferred_username:email}, serverSecret);
-    
+
             res.status(201).json({
               access_token: accessToken,
               token_type: "Bearer",
               id_token: idToken
             });
-    
+
           }
         });
       }else{//If the user has logged in with google before an accessToken is returned
@@ -91,8 +94,8 @@ router.post("/", function(req, res){
           id_token: idToken
         });
       }
-       
-      
+
+
       return;
     });
   });
