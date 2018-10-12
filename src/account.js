@@ -1,17 +1,18 @@
+//require all npm packages and help files
 const express = require('express');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcryptjs');
+const token = require('./tokens'); //import verify function
+const uuidv1 = require('uuid/v1'); //Used to generate unique universial id
 const initDB = require('./initDB');
 const vars = require('./variables');
-const token = require('./tokens');//import verify function
-const uuidv1 = require('uuid/v1');//Used to generate unique universial id
-
-router = express.Router();
 
 const db = initDB.db;
 const saltRounds = vars.saltRounds;
 
+const router = express.Router(); //Router is used to export the module, that will then be used in another file.js
 
+/*Bodyparser is used to be able to read bodies written in JSON format.*/
 router.use(bodyParser.json());
 
 //Create new account
@@ -21,20 +22,20 @@ router.post("/", function(req, res){
   const password = req.body.password;
   const email = req.body.email;
 
-  let errorCodes = [];
+  let errorCodes = [];  //Stor error codes
 
-
-  if(username.length < 4){  // Validate it
+  //Validate the received variables
+  if(username.length < 4){
     errorCodes.push("usernameTooShort");
   }else if(username.length > 20){
     errorCodes.push("usernameTooLong");
   }
 
-  if(password.length < 6){  // Validate it
+  if(password.length < 6){
     errorCodes.push("passwordTooShort");
   }
 
-  //validating for invalidCharacters
+  //Check so that username only contains letters and numbers
   if(!/^[a-zA-Z1-9]+$/.test(username)){
     errorCodes.push("usernameInvalidCharacters");
   }
@@ -54,6 +55,7 @@ router.post("/", function(req, res){
   const query = `INSERT INTO Account (id,username,hashedPassword,email) VALUES (?,?,?,?)`;
   const values = [id,username,hashedPassword,email];
 
+  //Insert account into database
   db.run(query,values,function(error){
     if(error){
       //Check if the username or email fails because they are not unique
