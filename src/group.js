@@ -6,6 +6,7 @@ const db = initDB.db;
 const token = require('./tokens');//import verify function
 
 const router = express.Router();
+/*Bodyparser is used to be able to read bodies written in JSON format.*/
 router.use(bodyParser.json());
 
 //Create new group
@@ -33,6 +34,7 @@ router.post("/", function(req, res){
     errorCodes.push("groupNameTooLong");
   }
 
+  //groupname validation
   if(!/^[a-zA-Z1-9 ]+$/.test(groupName)){
     errorCodes.push("groupNameInvalidCharacters");
   }
@@ -62,7 +64,8 @@ router.post("/", function(req, res){
       const lastID = this.lastID;
 
       const values = [lastID, adminId];
-    	const query = "INSERT INTO groupMember(groupId,accountId) VALUES (?,?)";
+      const query = "INSERT INTO groupMember(groupId,accountId) VALUES (?,?)";
+      // Insert the admin as groupmember if group was created
       db.run(query, values, function(error){
         if(error){
           res.status(500).end();
@@ -79,6 +82,7 @@ router.post("/", function(req, res){
 
 //Retrieve all Groups
 router.get("/",function(req, res){
+  // selects all groups and counts the groupmembers
   const query = `
     SELECT 'Group'.id, 'Group'.adminId, 'Group'.groupName, 'Group'.platformName,
     'Group'.platformFee, 'Group'.paymentDate, Count(GroupMember.accountId) AS memberCount
@@ -110,7 +114,7 @@ router.get("/",function(req, res){
 //Retrieve single Group
 router.get("/:groupName", function(req, res){
   const groupName = req.params.groupName;
-
+   // selects one group and counts the groupmembers
   const query = `
     SELECT 'Group'.id, 'Group'.adminId, 'Group'.groupName, 'Group'.platformName,
     'Group'.platformFee, 'Group'.paymentDate, Count(GroupMember.accountId) AS memberCount,
@@ -126,7 +130,7 @@ router.get("/:groupName", function(req, res){
     res.status(401).end();
     return;
   }
-
+// run the select query
  db.get(query, values, function(error, post){
    if(error){
      res.status(500).send(error.message);
@@ -142,7 +146,7 @@ router.get("/:groupName", function(req, res){
 
 //Update Group
 router.put("/:id", function(req, res){
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id); //Retrieve the id from the url
   const body = req.body;
   const groupName = body.groupName;
   const platformUsername = body.platformUsername;
@@ -152,7 +156,7 @@ router.put("/:id", function(req, res){
   db.get("SELECT * FROM 'Group' WHERE id = ?",[id],function(error,group){
     if(error){
       res.status(500).send(error).end();
-    }else if(!group){//no acount found
+    }else if(!group){//no account found
       res.status(400).send("groupNotFound").end();
       return;
     }else{
@@ -163,14 +167,14 @@ router.put("/:id", function(req, res){
       }
 
 
-      let errorCodes = [];
+      let errorCodes = []; //array error codes will get pushed into
 
       if(groupName.length < 4){  // Validate it
         errorCodes.push("groupNameTooShort");
       }else if(groupName.length > 20){
         errorCodes.push("groupNameTooLong");
       }
-
+      // validation for invalid letters
       if(!/^[a-zA-Z1-9]+$/.test(groupName)){
         errorCodes.push("groupNameInvalidCharacters");
       }
@@ -182,7 +186,7 @@ router.put("/:id", function(req, res){
 
       const query = "UPDATE 'Group' SET groupName = ?, platformUsername = ?, platformFee = ?, privateGroup = ? WHERE id = ?";
       const values = [groupName,platformUsername,platformFee,privateGroup,id];
-
+      // run the update query
       db.run(query,values,function(error){
         if(error){
           res.status(500).end();
@@ -196,13 +200,14 @@ router.put("/:id", function(req, res){
 
 //Delete Groups
 router.delete("/:id",function(req, res){
-  const id = parseInt(req.params.id);
+  const id = parseInt(req.params.id); //Retrieve the id from the url
   const values = [id];
 
+  //check if group exists
   db.get("SELECT * FROM 'Group' WHERE id = ?",values,function(error,group){
     if(error){
       res.status(500).send(error).end();
-    }else if(!group){//no acount found
+    }else if(!group){//no group found
       res.status(400).send("groupNotFound").end();
       return;
     }else{
@@ -213,6 +218,7 @@ router.delete("/:id",function(req, res){
       }
 
       const query = "DELETE FROM 'Group' WHERE id = ?";
+      // run the delete query
       db.run(query,values,function(error){
         if(error){
           res.status(500).end();
@@ -224,4 +230,4 @@ router.delete("/:id",function(req, res){
   });
 });
 
-module.exports = router;
+module.exports = router; //Exports the module
