@@ -11,7 +11,7 @@ const initDB = require('./initDB');
 const serverSecret = vars.serverSecret;
 const db = initDB.db;
 
-router = express.Router();  //Router is used to export the module, that will then be used in another file.js
+const router = express.Router();  //Router is used to export the module, that will then be used in another file.js
 
 /*Use bodyparser to be able to read bodies written in JSON and XML format.*/
 router.use(bodyParser.json());

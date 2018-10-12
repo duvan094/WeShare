@@ -5,7 +5,7 @@ const initDB = require('./initDB');
 const db = initDB.db;
 const token = require('./tokens');//import verify function
 
-router = express.Router();
+const router = express.Router();
 router.use(bodyParser.json());
 
 //Create new group

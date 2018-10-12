@@ -3,7 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const initDB = require('./initDB');
 const token = require('./tokens');//import verify function
-router = express.Router();
+const router = express.Router();
 
 const db = initDB.db;
 
