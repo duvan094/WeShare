@@ -60,8 +60,8 @@ function authorizedUser(req,accountId = null){
   if(authorizationHeader === undefined){
     return false;
   }
-    //used to remove "Bearer" in the beginning of accessToken
-    const accessToken = authorizationHeader.substr(7);
+  //used to remove "Bearer" in the beginning of accessToken
+  const accessToken = authorizationHeader.substr(7);
 
   let tokenAccountId = null;
 

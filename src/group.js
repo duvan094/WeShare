@@ -57,6 +57,7 @@ router.post("/", function(req, res){
       if(error.message == "SQLITE_CONSTRAINT: UNIQUE constraint failed: Group.groupName"){
         res.status(400).json(["groupNameNotUnique"]);
       }else{
+        console.log(error.message);
         res.status(500).send(error).end();
       }
     }else{
@@ -175,7 +176,7 @@ router.put("/:id", function(req, res){
         errorCodes.push("groupNameTooLong");
       }
       // validation for invalid letters
-      if(!/^[a-zA-Z1-9]+$/.test(groupName)){
+      if(!/^[a-zA-Z1-9 ]+$/.test(groupName)){
         errorCodes.push("groupNameInvalidCharacters");
       }
 
